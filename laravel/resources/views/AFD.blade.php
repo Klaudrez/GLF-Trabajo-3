@@ -852,25 +852,21 @@ function Afd_to_Er(estados,alfabeto,gama,e_finales,e_inicial)
     var eliminar=Terna_estados(e_inicial,gama)
     var estados_s=Salidas_de_x(eliminar[1],gama)
     var estados_e=Entradas_de_x(eliminar[1],gama)
+    console.log(eliminar,estados_e,estados_s)
     for(let i=0;i<estados_e.length;i++)
     {
       for(let j=0;j<estados_s.length;j++)
       {
-        var resultante=simplificarexpresion(ObtenerAlfa(estados_e[i],gama,eliminar[1]))
-        if(estados_e[i]==e_inicial)
-        {
-          resultante+=simplificarexpresion(Clausuras(eliminar[1],gama))
-          resultante+=simplificarexpresion(Uniones(eliminar[1],gama,estados_s[j]))
-          gama.push(añadirtransicion(eliminar[0],resultante,estados_s[j]))
-        }
-        else
-        {
-          resultante+=simplificarexpresion(Clausuras(estados_e[i],gama))
-          resultante+=simplificarexpresion(Uniones(estados_e[i],gama,eliminar[1]))
-          resultante+=simplificarexpresion(Clausuras(eliminar[1],gama))
-          resultante+=simplificarexpresion(Uniones(eliminar[1],gama,estados_s[j]))
-          gama.push(añadirtransicion(estados_e[i],resultante,estados_s[j]))
-        } 
+        console.log(estados_e[i],estados_s[j])
+        mostrargama(gama)
+        var resultante=simplificarexpresion(Uniones(estados_e[i],gama,eliminar[1]))
+        console.log(resultante)
+        resultante+=simplificarexpresion(Clausuras(eliminar[1],gama))
+        console.log(resultante)
+        resultante+=simplificarexpresion(Uniones(eliminar[1],gama,estados_s[j]))
+        console.log(resultante)
+        gama.push(añadirtransicion(estados_e[i],resultante,estados_s[j]))
+        console.log(añadirtransicion(estados_e[i],resultante,estados_s[j]))
       }
     }
     var er=Uniones(eliminar[0],gama,eliminar[2])
@@ -891,13 +887,25 @@ function Afd_to_Er(estados,alfabeto,gama,e_finales,e_inicial)
   graph()
 }
 
+function mostrargama(gama)
+{
+  for(let i=0;i<gama.length;i++)
+    console.log(gama[i])
+}
+
 function Entradas_de_x(estado,gama)
 {
   var Conexiones=[]
   for(let i=0;i<gama.length;i++)
   {
-    if(estado!=gama[i][0] && estado==gama[i][2] && !Conexiones.includes(gama[i][0]))
-      Conexiones.push(gama[i][0])
+    if(estado!==gama[i][0])
+    {
+      if(estado===gama[i][2])
+      {
+        if(!Conexiones.includes(gama[i][0]))
+          Conexiones.push(gama[i][0])
+      }
+    }
   }
   return Conexiones
 }
