@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/', function () {
+Route::get('/AFD', function () {
     return view('AFD');
+});
+Route::get('/AP', function () {
+    return view('AP');
 });
  
