@@ -1,19 +1,39 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+      <Navbar />
+      <v-card
+    outlined
+    style="margin: 1%; padding: 1%;"
+  >
+   <router-view/>
+      </v-card>
   </div>
 </template>
 
+<script>
+import Navbar from "@/components/Navbar.vue";
+
+export default {
+  components: {
+    Navbar,
+  },
+}
+</script>
+
 <style lang="scss">
+.v-btn {
+  margin: 2px;
+}
+.col {
+  padding: 0 !important;
+}
+.v-text-field.v-text-field--enclosed .v-text-field__details {
+  margin: 0 !important;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
