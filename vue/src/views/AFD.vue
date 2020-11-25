@@ -97,13 +97,13 @@
 
       <v-row>
         <v-col cols="12" style="display: flex; justify-content: center">
-          <v-btn depressed outlined raised @click="this.ValidarEntrada1"
+          <v-btn color="secondary" depressed raised @click="this.ValidarEntrada1"
             >Ingresar autómata</v-btn
           >
-          <v-btn color="primary" depressed outlined raised @click="this.AFD_ER"
+          <v-btn color="primary" depressed raised @click="this.AFD_ER"
             >Transformar a ER</v-btn
           >
-          <v-btn color="accent" depressed outlined raised @click="this.reset"
+          <v-btn color="primary" depressed outlined raised @click="this.reset"
             >Limpiar</v-btn
           >
         </v-col>
@@ -197,11 +197,11 @@ export default {
       let valG = /^[a-zA-Z0-9]+,(@|[a-zA-Z0-9]+),[a-zA-Z0-9]+(;[a-zA-Z0-9]+,(@|[a-zA-Z0-9]+),[a-zA-Z0-9]+)*$/g;
 
       if (
-        Q.length == 0 ||
-        A.length == 0 ||
-        G.length == 0 ||
-        this.E_inicial1.length == 0 ||
-        F.length == 0
+        Q == null ||
+        A == null ||
+        G == null ||
+        this.E_inicial1 == null ||
+        F == null
       )
         alert("Hay campos en blanco");
       else {
@@ -273,36 +273,6 @@ export default {
         this.E_inicial1,
         this.E_Finales1
       );
-      //   this.E_inicial2 = ResetearAutomata(
-      //     this.ConjuntoQ2,
-      //     this.Alfabeto2,
-      //     this.Gama2,
-      //     this.E_inicial2,
-      //     this.E_Finales2
-      //   );
-      //   console.log(
-      //     this.ConjuntoQ2,
-      //     this.Alfabeto2,
-      //     this.Gama2,
-      //     this.E_inicial2,
-      //     this.E_Finales2
-      //   );
-      //   this.E_inicial3 = ResetearAutomata(
-      //     this.ConjuntoQ3,
-      //     this.Alfabeto3,
-      //     this.Gama3,
-      //     this.E_inicial3,
-      //     this.E_Finales3
-      //   );
-      //   console.log(ConjuntoQ3, Alfabeto3, Gama3, E_inicial3, E_Finales3);
-      //   E_inicialCombi = ResetearAutomata(
-      //     ConjuntoCombi,
-      //     [],
-      //     GamaCombi,
-      //     E_inicialCombi,
-      //     E_FinalesCombi
-      //   );
-      //   console.log(ConjuntoCombi, [], GamaCombi, E_inicialCombi, E_FinalesCombi);
       this.parsearGrafo();
     },
 
