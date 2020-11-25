@@ -139,17 +139,17 @@
 
 <script type="text/javascript">
 
-var E_inicial1="",E_inicial2="",E_inicial3,E_inicialP
+var E_inicial1="",E_inicial2="",E_inicialCombi
 
-var AlfabetoP=[]
+var AlfabetoP1=[], AlfabetoP2=[], AlfabetoPCombi=[]
 
-var ConjuntoQ1=[],ConjuntoQ2=[],ConjuntoQ3=[],ConjuntoP=[]
+var ConjuntoQ1=[],ConjuntoQ2=[],ConjuntoPizarra=[],ConjuntoCombi=[]
 
-var Alfabeto1=[],Alfabeto2=[],Alfabeto3=[]
+var Alfabeto1=[],Alfabeto2=[],AlfabetoCombi=[]
 
-var Gama1=[],Gama2=[],Gama3=[],GamaP=[]
+var Gama1=[],Gama2=[],GamaPizarra=[],GamaCombi=[]
 
-var E_Finales1=[],E_Finales2=[],E_Finales3=[],E_FinalesP=[]
+var E_Finales1=[],E_Finales2=[],E_FinalesCombi=[]
 
 var node,edge,data,container,options,network
 
@@ -159,7 +159,7 @@ function ValidarEntrada1()
     limpiar()
 
     if(ConjuntoQ1.length>0)
-      E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1)
+      E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1)
 
     E_inicial1=document.getElementById("Inicial").value
     var Q=document.getElementById("Q").value
@@ -183,14 +183,14 @@ function ValidarEntrada1()
           ConjuntoQ1=Datos_dupli(Q.split(','))
           Alfabeto1=Datos_dupli(A.split(','))
           E_Finales1=Datos_dupli(F.split(','))
-          AlfabetoP=Datos_dupli(P.split(","))
+          AlfabetoP1=Datos_dupli(P.split(','))
           Gama1=elemento(Datos_dupli(G.split(';')))
           var idFinales = ids(E_Finales1,ConjuntoQ1)
           var idGama = ids_gama(Gama1,ConjuntoQ1)
           var id_ini=Buscar_id(ConjuntoQ1,E_inicial1)-1
           if(validar_estadosx(ConjuntoQ1,E_inicial1))
           { 
-            if(validar_estadosx(ConjuntoQ1,E_Finales1) && validar_gama(ConjuntoQ1,Alfabeto1,AlfabetoP,Gama1))
+            if(validar_estadosx(ConjuntoQ1,E_Finales1) && validar_gama(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1))
             {
               ConjuntoQ1=cambiarcaracter(ConjuntoQ2,ConjuntoQ1)
               E_inicial1 =  ConjuntoQ1[id_ini]
@@ -201,23 +201,22 @@ function ValidarEntrada1()
           
 
               Gama1=epsilon(Gama1)  
-              ConjuntoQ3=copiararray(ConjuntoQ1,ConjuntoQ2)
-              Gama3=copiararray(Gama1,Gama2)
-              Alfabeto3=copiararray(Alfabeto1,Alfabeto2)
-              E_Finales3=copiararray(E_Finales1,E_Finales2) 
+
+              ConjuntoPizarra=copiararray(ConjuntoQ1,ConjuntoQ2)
+              GamaPizarra=copiararray(Gama1,Gama2)
               
-              mostrardatos(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1,"A1")
+              mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
 
               graph()
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
-              E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1)
+              E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1)
             }
           }
           else{
             alert("Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados")
-            E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1)
+            E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1)
           }
         }
         else
@@ -252,7 +251,7 @@ function ValidarEntrada2()
     limpiar()
     if(ConjuntoQ2.length>0){
 
-      E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2)
+      E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2)
     }
 
     E_inicial2=document.getElementById("Inicial").value
@@ -276,7 +275,7 @@ function ValidarEntrada2()
         {
           ConjuntoQ2=Datos_dupli(Q.split(','))
           Alfabeto2=Datos_dupli(A.split(','))
-          AlfabetoP=Datos_dupli(P.split(","))
+          AlfabetoP2=Datos_dupli(P.split(","))
           E_Finales2=Datos_dupli(F.split(','))
           Gama2=elemento(Datos_dupli(G.split(';')))
           var idFinales = ids(E_Finales2,ConjuntoQ2)
@@ -284,7 +283,7 @@ function ValidarEntrada2()
           var id_ini=Buscar_id(ConjuntoQ2,E_inicial2)-1
           if(validar_estadosx(ConjuntoQ2,E_inicial2))
           {
-            if(validar_estadosx(ConjuntoQ2,E_Finales2) && validar_gama(ConjuntoQ2,Alfabeto2,AlfabetoP,Gama2))
+            if(validar_estadosx(ConjuntoQ2,E_Finales2) && validar_gama(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2))
             {
               ConjuntoQ2=cambiarcaracter(ConjuntoQ1,ConjuntoQ2)
 
@@ -297,23 +296,21 @@ function ValidarEntrada2()
           
               Gama2=epsilon(Gama2)
               
-              ConjuntoQ3=copiararray(ConjuntoQ1,ConjuntoQ2)
-              Gama3=copiararray(Gama1,Gama2)
-              Alfabeto3=copiararray(Alfabeto1,Alfabeto2)
-              E_Finales3=copiararray(E_Finales1,E_Finales2)
+              ConjuntoPizarra=copiararray(ConjuntoQ1,ConjuntoQ2)
+              GamaPizarra=copiararray(Gama1,Gama2)
 
-              mostrardatos(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2,"A2")
+              mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
 
               graph()
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
-              E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2)
+              E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2)
             }
           }
           else{
             alert("Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados")
-            E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2)
+            E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2)
           }
         }
         else
@@ -325,21 +322,22 @@ function reset()
 {
   limpiar()
   console.log("Datos borrados.")
-  E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1)
-  console.log(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1)
-  E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2)
-  console.log(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2)
-  E_inicial3=ResetearAutomata(ConjuntoQ3,Alfabeto3,Gama3,E_inicial3,E_Finales3)
-  console.log(ConjuntoQ3,Alfabeto3,Gama3,E_inicial3,E_Finales3)
-  E_inicialP=ResetearAutomata(ConjuntoP,[],GamaP,E_inicialP,E_FinalesP)
-  console.log(ConjuntoP,[],GamaP,E_inicialP,E_FinalesP)
+  E_inicial1=ResetearAutomata(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1)
+  
+  E_inicial2=ResetearAutomata(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2)
+  
+  E_inicialCombi=ResetearAutomata(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi)
+  
+  ConjuntoPizarra=copiararray(ConjuntoQ1,ConjuntoQ2)
+  GamaPizarra=copiararray(Gama1,Gama2)
   graph()
 }
 
-function ResetearAutomata(estados,alfabeto,gama,e_inicial,e_finales)
+function ResetearAutomata(estados,alfabeto,alfabetopila,gama,e_inicial,e_finales)
 {
   estados=estados.splice(0,estados.length)
   alfabeto=alfabeto.splice(0,alfabeto.length)
+  alfabetopila=alfabetopila.splice(0,alfabeto.length)
   gama=gama.splice(0,gama.length)
   e_inicial=null
   e_finales=e_finales.splice(0,e_finales.length)
@@ -385,9 +383,10 @@ function limpiar()
   console.clear()
 }
 
-function mostrardatos(conjunto,alfabeto,gama,e_ini,e_final,Nautomata)
+function mostrardatos(conjunto,alfabeto,alfabetopila,gama,e_ini,e_final,Nautomata)
 {
     console.log("Estados "+Nautomata+":",conjunto)
+    console.log("Alfabeto Pila "+Nautomata+":",alfabetopila)
     console.log("Alfabeto "+Nautomata+":",alfabeto)
     console.log("Transiciones "+Nautomata+":",gama)
     console.log("Estados finales "+Nautomata+":",e_final)
@@ -402,8 +401,8 @@ function Union()
   {
     if(compararalfabeto(Alfabeto1,Alfabeto2))
     {
-      mostrardatos(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1,"A1")
-      mostrardatos(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2,"A2")
+      mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
+      mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
 
       var inicio1=ConjuntoQ1[0]
       var inicio2=ConjuntoQ2[0]
@@ -422,12 +421,10 @@ function Union()
 
       E_FinalesCombi=copiararray(E_Finales1,E_Finales2)
 
-      ConjuntoQ3=copiararray(ConjuntoCombi,[])
-      Gama3=copiararray(GamaCombi,[])
-      Alfabeto3=copiararray(Alfabeto1,[])
-      E_Finales3=copiararray(E_FinalesCombi,[]) 
+      ConjuntoPizarra=copiararray(ConjuntoCombi,[])
+      GamaPizarra=copiararray(GamaCombi,[])
 
-      mostrardatos(ConjuntoCombi,Alfabeto1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Au")
+      mostrardatos(ConjuntoCombi,Alfabeto1,AlfabetoP1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Au")
       graph()
     }
     else
@@ -467,14 +464,17 @@ function Concatenar()
         {
           if(a1=="1")
           {
-            mostrardatos(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1,"A1")
-            mostrardatos(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2,"A2")
 
-            ConjuntoQ1.push("Ni")
+            mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
+            mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
+
+            ConjuntoQ1.splice(0,0,"Ni")
             ConjuntoQ1.push("Nf")
 
-            ConjuntoCombi=copiararray(ConjuntoQ1,ConjuntoQ2)
+            ConjuntoCombi=Datos_dupli(copiararray(ConjuntoQ1,ConjuntoQ2))
             GamaCombi=copiararray(Gama1,Gama2)
+            AlfabetoCombi=Datos_dupli(copiararray(Alfabeto1,Alfabeto2))
+            AlfabetoPCombi=Datos_dupli(copiararray(AlfabetoP1,AlfabetoP2))
             E_FinalesCombi=copiararray(E_Finales1,E_Finales2)
 
             E_inicialCombi="Ni"
@@ -496,24 +496,25 @@ function Concatenar()
             GamaCombi=epsilon(GamaCombi)
 
            
-            ConjuntoQ3=copiararray(ConjuntoCombi,[])
-            Gama3=copiararray(GamaCombi,[])
-            Alfabeto3=copiararray(Alfabeto1,[])
-            E_Finales3=copiararray(E_FinalesCombi,[]) 
-            mostrardatos(ConjuntoCombi,Alfabeto1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
+            ConjuntoPizarra=copiararray(ConjuntoCombi,[])
+            GamaPizarra=copiararray(GamaCombi,[])
+      
+            mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
           }
           else
           {
-            mostrardatos(ConjuntoQ2,Alfabeto2,Gama2,E_inicial2,E_Finales2,"A2")
-            mostrardatos(ConjuntoQ1,Alfabeto1,Gama1,E_inicial1,E_Finales1,"A1")
+            mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
+            mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
 
-            ConjuntoQ2.push("Ni")
+            ConjuntoQ2.splice(0,0,"Ni")
             ConjuntoQ2.push("Nf")
 
-            ConjuntoCombi=copiararray(ConjuntoQ2,ConjuntoQ1)
+            ConjuntoCombi=Datos_dupli(copiararray(ConjuntoQ2,ConjuntoQ1))
             GamaCombi=copiararray(Gama2,Gama1)
+            AlfabetoCombi=Datos_dupli(copiararray(Alfabeto2,Alfabeto1))
+            AlfabetoPCombi=Datos_dupli(copiararray(AlfabetoP2,AlfabetoP1))
             E_FinalesCombi=copiararray(E_Finales2,E_Finales1)
 
             E_inicialCombi="Ni"
@@ -534,11 +535,10 @@ function Concatenar()
 
             GamaCombi=epsilon(GamaCombi)
 
-            ConjuntoQ3=copiararray(ConjuntoCombi,[])
-            Gama3=copiararray(GamaCombi,[])
-            Alfabeto3=copiararray(Alfabeto1,[])
-            E_Finales3=copiararray(E_FinalesCombi,[]) 
-            mostrardatos(ConjuntoCombi,Alfabeto1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
+            ConjuntoPizarra=copiararray(ConjuntoCombi,[])
+            GamaPizarra=copiararray(GamaCombi,[])
+        
+            mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
           }
@@ -554,25 +554,6 @@ function Concatenar()
   }
   else
     alert("Debe ingresar ambos automatas")
-}
-//                          q0,r0
-function comparar_eini(estado1,estado2)
-{
-  if(estado1!="" && estado2!="")
-  {
-      if(estado1==estado2)
-      {
-        if(estado2[0].charCodeAt()==57 || estado2[0].charCodeAt()==90 || estado2[0].charCodeAt()==122)
-          estado2=estado2.replace(estado2[0],String.fromCharCode(estado2[0].charCodeAt()-1))
-        else
-          estado2=estado2.replace(estado2[0],String.fromCharCode(estado2[0].charCodeAt()+1))
-        return estado2
-      }
-      else
-        return estado1
-  }
-  return estado1
-
 }
 
 function estados3deE(estado,gama)
@@ -840,7 +821,7 @@ function visestado(arreglo)
 function alfabetoxestado(arreglo)
 {
   var object=[]
-  arreglo.forEach(element => {object.push({from: Buscar_id(ConjuntoQ3,element[0]), to: Buscar_id(ConjuntoQ3,element[4]), label: element[1]+"/"+element[2]+"/"+element[3]})})
+  arreglo.forEach(element => {object.push({from: Buscar_id(ConjuntoPizarra,element[0]), to: Buscar_id(ConjuntoPizarra,element[4]), label: element[1]+"/"+element[2]+"/"+element[3]})})
   return object
 }
 
@@ -881,8 +862,8 @@ function Comparar(arr1,arr2)
 
 function graph()
 {
-    node=new vis.DataSet(visestado(ConjuntoQ3))
-    edge=new vis.DataSet(alfabetoxestado(Gama3))
+    node=new vis.DataSet(visestado(ConjuntoPizarra))
+    edge=new vis.DataSet(alfabetoxestado(GamaPizarra))
     container= document.getElementById('mynetwork')
     data={nodes: node, edges: edge}
     options={edges:{arrows:{to:{enabled:true}}}}
