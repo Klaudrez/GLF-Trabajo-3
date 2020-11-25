@@ -77,7 +77,7 @@ export default {
         }
       },
       ],
-      layout: { name: "cola" },
+      layout: { name: "circle" },
       userZoomingEnabled: false,
     },
   }),

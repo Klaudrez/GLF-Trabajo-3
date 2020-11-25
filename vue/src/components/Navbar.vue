@@ -41,8 +41,11 @@ export default {
   background-color: #02182b !important;
 }
 a.navbar-item {
-  color: #e9cfcf;
+  color: #ffffff !important;
   background-color: #02182b;
+}
+a.navbar-item:hover {
+  color: #02182b !important;
 }
 .router-link-active .navbar-item {
   height: 100%;

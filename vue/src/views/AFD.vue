@@ -162,6 +162,9 @@ export default {
             alfabeto: arista[1],
           });
         }
+        if(this.ConjuntoP.indexOf("Nf") != -1) {
+          nodosF.push("Nf")
+        }
         this.grafo = {
           nodos: this.ConjuntoP,
           alfabeto: letras,

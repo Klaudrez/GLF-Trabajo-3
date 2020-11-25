@@ -79,7 +79,9 @@
         </tbody>
       </table>
     </div>
+    <div v-if="grafo.nodos.length > 0" >
     <Grafo :key="recargarGrafo" :grafo="grafo" />
+    </div>
     <h1 class="title">Datos autómatas</h1>
     <v-container fluid>
       <v-row>
@@ -263,7 +265,13 @@ export default {
   components: { Grafo },
   data() {
     return {
-      grafo: {},
+      grafo: {
+        nodos: [],
+        alfabeto: [],
+        inicial: [],
+        aristas: [],
+        finales: [],
+      },
       recargarGrafo: false,
       mostrar: false,
       Nodos: null,
@@ -276,24 +284,24 @@ export default {
       Finales: null,
       E_inicial1: "",
       E_inicial2: "",
-      E_inicial3: null,
-      E_inicialP: null,
-      AlfabetoP: [],
+      E_inicialCombi: null,
+      AlfabetoP1: [],
+      AlfabetoP2: [],
+      AlfabetoPCombi: [],
       ConjuntoQ1: [],
       ConjuntoQ2: [],
-      ConjuntoQ3: [],
-      ConjuntoP: [],
+      ConjuntoPizarra: [],
+      ConjuntoCombi: [],
       Alfabeto1: [],
       Alfabeto2: [],
-      Alfabeto3: [],
+      AlfabetoCombi: [],
       Gama1: [],
       Gama2: [],
-      Gama3: [],
-      GamaP: [],
+      GamaPizarra: [],
+      GamaCombi: [],
       E_Finales1: [],
       E_Finales2: [],
-      E_Finales3: [],
-      E_FinalesP: [],
+      E_FinalesCombi: [],
       node: null,
       edge: null,
       data: null,
@@ -304,24 +312,42 @@ export default {
   },
   mounted() {},
   methods: {
-    parsearGrafo() {
-      if (this.ConjuntoQ3 && this.Gama3 != null) {
+    parsearGrafo(funcion) {
+      console.log("this.GamaPizarra", this.GamaPizarra);
+      console.log("this.ConjuntoPizarra", this.ConjuntoPizarra);
+      if (this.ConjuntoPizarra && this.GamaPizarra != null) {
         var aristas = [];
-        var letras = this.Alfabeto.split(",");
-        var nodosF = this.Finales.split(",");
-        nodosF.push(this.Conca2);
-        for (var i = 0; i < this.Gama3.length; i++) {
-          var arista = this.Gama3[i];
+        var nodosF = funcion
+          ? this.E_FinalesCombi
+          : this.Finales.split(",");
+        // if (this.Conca2 != null) {
+        //   nodosF.push(this.Conca2);
+        // }
+        if(this.grafo.finales.length > 0 && !funcion) {
+          nodosF = nodosF.concat(this.grafo.finales);
+        }
+        for (var i = 0; i < this.GamaPizarra.length; i++) {
+          var arista = this.GamaPizarra[i];
           aristas.push({
             origen: arista[0],
-            destino: arista[2],
-            alfabeto: arista[1],
+            destino: arista[4],
+            alfabeto: arista[1] + "/" + arista[2] + "/" + arista[3],
           });
         }
+        var inicial = this.grafo.inicial;
+        if (inicial.indexOf(this.Inicial) == -1) {
+          inicial.push(this.Inicial);
+        }
+        if(funcion) {
+          inicial = [];
+          inicial.push(this.E_inicialCombi);
+        }
+        if (this.ConjuntoPizarra.indexOf(inicial) == -1) {
+          this.ConjuntoPizarra.push(inicial);
+        }
         this.grafo = {
-          nodos: this.ConjuntoQ3,
-          alfabeto: letras,
-          inicial: this.Conca1,
+          nodos: this.ConjuntoPizarra,
+          inicial: inicial,
           aristas: aristas,
           finales: nodosF,
         };
@@ -336,6 +362,7 @@ export default {
         this.E_inicial1 = this.ResetearAutomata(
           this.ConjuntoQ1,
           this.Alfabeto1,
+          this.AlfabetoP1,
           this.Gama1,
           this.E_inicial1,
           this.E_Finales1
@@ -375,7 +402,7 @@ export default {
           this.ConjuntoQ1 = this.Datos_dupli(Q.split(","));
           this.Alfabeto1 = this.Datos_dupli(A.split(","));
           this.E_Finales1 = this.Datos_dupli(F.split(","));
-          this.AlfabetoP = this.Datos_dupli(P.split(","));
+          this.AlfabetoP1 = this.Datos_dupli(P.split(","));
           this.Gama1 = this.elemento(this.Datos_dupli(G.split(";")));
           var idFinales = this.ids(this.E_Finales1, this.ConjuntoQ1);
           var idGama = this.ids_gama(this.Gama1, this.ConjuntoQ1);
@@ -386,7 +413,7 @@ export default {
               this.validar_gama(
                 this.ConjuntoQ1,
                 this.Alfabeto1,
-                this.AlfabetoP,
+                this.AlfabetoP1,
                 this.Gama1
               )
             ) {
@@ -411,17 +438,23 @@ export default {
                 this.E_Finales1,
                 this.E_Finales2
               );
+              this.ConjuntoPizarra = this.copiararray(
+                this.ConjuntoQ1,
+                this.ConjuntoQ2
+              );
+              this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
 
               this.mostrardatos(
                 this.ConjuntoQ1,
                 this.Alfabeto1,
+                this.AlfabetoP1,
                 this.Gama1,
                 this.E_inicial1,
                 this.E_Finales1,
                 "A1"
               );
 
-              this.parsearGrafo();
+              this.parsearGrafo(false);
             } else {
               alert(
                 "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
@@ -429,6 +462,7 @@ export default {
               this.E_inicial1 = this.ResetearAutomata(
                 this.ConjuntoQ1,
                 this.Alfabeto1,
+                this.AlfabetoP1,
                 this.Gama1,
                 this.E_inicial1,
                 this.E_Finales1
@@ -441,6 +475,7 @@ export default {
             this.E_inicial1 = this.ResetearAutomata(
               this.ConjuntoQ1,
               this.Alfabeto1,
+              this.AlfabetoP1,
               this.Gama1,
               this.E_inicial1,
               this.E_Finales1
@@ -472,6 +507,7 @@ export default {
         this.E_inicial2 = this.ResetearAutomata(
           this.ConjuntoQ2,
           this.Alfabeto2,
+          this.AlfabetoP2,
           this.Gama2,
           this.E_inicial2,
           this.E_Finales2
@@ -511,7 +547,7 @@ export default {
         ) {
           this.ConjuntoQ2 = this.Datos_dupli(Q.split(","));
           this.Alfabeto2 = this.Datos_dupli(A.split(","));
-          this.AlfabetoP = this.Datos_dupli(P.split(","));
+          this.AlfabetoP2 = this.Datos_dupli(P.split(","));
           this.E_Finales2 = this.Datos_dupli(F.split(","));
           this.Gama2 = this.elemento(this.Datos_dupli(G.split(";")));
           var idFinales = this.ids(this.E_Finales2, this.ConjuntoQ2);
@@ -523,7 +559,7 @@ export default {
               this.validar_gama(
                 this.ConjuntoQ2,
                 this.Alfabeto2,
-                this.AlfabetoP,
+                this.AlfabetoP2,
                 this.Gama2
               )
             ) {
@@ -550,17 +586,23 @@ export default {
                 this.E_Finales1,
                 this.E_Finales2
               );
+              this.ConjuntoPizarra = this.copiararray(
+                this.ConjuntoQ1,
+                this.ConjuntoQ2
+              );
+              this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
 
               this.mostrardatos(
                 this.ConjuntoQ2,
                 this.Alfabeto2,
+                this.AlfabetoP2,
                 this.Gama2,
                 this.E_inicial2,
                 this.E_Finales2,
                 "A2"
               );
 
-              this.parsearGrafo();
+              this.parsearGrafo(false);
             } else {
               alert(
                 "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
@@ -568,6 +610,7 @@ export default {
               this.E_inicial2 = this.ResetearAutomata(
                 this.ConjuntoQ2,
                 this.Alfabeto2,
+                this.AlfabetoP2,
                 this.Gama2,
                 this.E_inicial2,
                 this.E_Finales2
@@ -580,6 +623,7 @@ export default {
             this.E_inicial2 = this.ResetearAutomata(
               this.ConjuntoQ2,
               this.Alfabeto2,
+              this.AlfabetoP2,
               this.Gama2,
               this.E_inicial2,
               this.E_Finales2
@@ -596,64 +640,45 @@ export default {
       this.E_inicial1 = this.ResetearAutomata(
         this.ConjuntoQ1,
         this.Alfabeto1,
+        this.AlfabetoP1,
         this.Gama1,
         this.E_inicial1,
         this.E_Finales1
       );
-      console.log(
-        this.ConjuntoQ1,
-        this.Alfabeto1,
-        this.Gama1,
-        this.E_inicial1,
-        this.E_Finales1
-      );
+
       this.E_inicial2 = this.ResetearAutomata(
         this.ConjuntoQ2,
         this.Alfabeto2,
+        this.AlfabetoP2,
         this.Gama2,
         this.E_inicial2,
         this.E_Finales2
       );
-      console.log(
-        this.ConjuntoQ2,
-        this.Alfabeto2,
-        this.Gama2,
-        this.E_inicial2,
-        this.E_Finales2
+
+      this.E_inicialCombi = this.ResetearAutomata(
+        this.ConjuntoCombi,
+        this.AlfabetoCombi,
+        this.AlfabetoPCombi,
+        this.GamaCombi,
+        this.E_inicialCombi,
+        this.E_FinalesCombi
       );
-      this.E_inicial3 = this.ResetearAutomata(
-        this.ConjuntoQ3,
-        this.Alfabeto3,
-        this.Gama3,
-        this.E_inicial3,
-        this.E_Finales3
-      );
-      console.log(
-        this.ConjuntoQ3,
-        this.Alfabeto3,
-        this.Gama3,
-        this.E_inicial3,
-        this.E_Finales3
-      );
-      this.E_inicialP = this.ResetearAutomata(
-        this.ConjuntoP,
-        [],
-        this.GamaP,
-        this.E_inicialP,
-        this.E_FinalesP
-      );
-      console.log(
-        this.ConjuntoP,
-        [],
-        this.GamaP,
-        this.E_inicialP,
-        this.E_FinalesP
-      );
-      this.parsearGrafo();
+
+      this.ConjuntoPizarra = this.copiararray(this.ConjuntoQ1, this.ConjuntoQ2);
+      this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
+      this.parsearGrafo(false);
     },
-    ResetearAutomata(estados, alfabeto, gama, e_inicial, e_finales) {
+    ResetearAutomata(
+      estados,
+      alfabeto,
+      alfabetopila,
+      gama,
+      e_inicial,
+      e_finales
+    ) {
       estados = estados.splice(0, estados.length);
       alfabeto = alfabeto.splice(0, alfabeto.length);
+      alfabetopila = alfabetopila.splice(0, alfabeto.length);
       gama = gama.splice(0, gama.length);
       e_inicial = null;
       e_finales = e_finales.splice(0, e_finales.length);
@@ -691,8 +716,17 @@ export default {
     limpiar() {
       //   console.clear();
     },
-    mostrardatos(conjunto, alfabeto, gama, e_ini, e_final, Nautomata) {
+    mostrardatos(
+      conjunto,
+      alfabeto,
+      alfabetopila,
+      gama,
+      e_ini,
+      e_final,
+      Nautomata
+    ) {
       console.log("Estados " + Nautomata + ":", conjunto);
+      console.log("Alfabeto Pila " + Nautomata + ":", alfabetopila);
       console.log("Alfabeto " + Nautomata + ":", alfabeto);
       console.log("Transiciones " + Nautomata + ":", gama);
       console.log("Estados finales " + Nautomata + ":", e_final);
@@ -705,6 +739,7 @@ export default {
           this.mostrardatos(
             this.ConjuntoQ1,
             this.Alfabeto1,
+            this.AlfabetoP1,
             this.Gama1,
             this.E_inicial1,
             this.E_Finales1,
@@ -713,6 +748,7 @@ export default {
           this.mostrardatos(
             this.ConjuntoQ2,
             this.Alfabeto2,
+            this.AlfabetoP2,
             this.Gama2,
             this.E_inicial2,
             this.E_Finales2,
@@ -758,12 +794,13 @@ export default {
           this.mostrardatos(
             this.ConjuntoCombi,
             this.Alfabeto1,
+            this.AlfabetoP1,
             this.GamaCombi,
             this.E_inicialCombi,
             this.E_FinalesCombi,
             "Au"
           );
-          this.parsearGrafo();
+          this.parsearGrafo(true);
         } else alert("Los automatas no tienen coincidencias en sus alfabetos");
       } else alert("Debe ingresar ambos automatas");
     },
@@ -794,6 +831,7 @@ export default {
                 this.mostrardatos(
                   this.ConjuntoQ1,
                   this.Alfabeto1,
+                  this.AlfabetoP1,
                   this.Gama1,
                   this.E_inicial1,
                   this.E_Finales1,
@@ -802,20 +840,26 @@ export default {
                 this.mostrardatos(
                   this.ConjuntoQ2,
                   this.Alfabeto2,
+                  this.AlfabetoP2,
                   this.Gama2,
                   this.E_inicial2,
                   this.E_Finales2,
                   "A2"
                 );
 
-                this.ConjuntoQ1.push("Ni");
+                this.ConjuntoQ1.splice(0, 0, "Ni");
                 this.ConjuntoQ1.push("Nf");
 
-                this.ConjuntoCombi = this.copiararray(
-                  this.ConjuntoQ1,
-                  this.ConjuntoQ2
+                this.ConjuntoCombi = this.Datos_dupli(
+                  this.copiararray(this.ConjuntoQ1, this.ConjuntoQ2)
                 );
-                this.GamaCombi = this.dopiararray(this.Gama1, this.Gama2);
+                this.GamaCombi = this.copiararray(this.Gama1, this.Gama2);
+                this.AlfabetoCombi = this.Datos_dupli(
+                  this.copiararray(this.Alfabeto1, this.Alfabeto2)
+                );
+                this.AlfabetoPCombi = this.Datos_dupli(
+                  this.copiararray(this.AlfabetoP1, this.AlfabetoP2)
+                );
                 this.E_FinalesCombi = this.copiararray(
                   this.E_Finales1,
                   this.E_Finales2
@@ -848,23 +892,24 @@ export default {
 
                 this.GamaCombi = this.epsilon(this.GamaCombi);
 
-                this.ConjuntoQ3 = this.copiararray(this.ConjuntoCombi, []);
-                this.Gama3 = this.copiararray(this.GamaCombi, []);
-                this.Alfabeto3 = this.copiararray(this.Alfabeto1, []);
-                this.E_Finales3 = this.copiararray(this.E_FinalesCombi, []);
+                this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
+                this.GamaPizarra = this.copiararray(this.GamaCombi, []);
+
                 this.mostrardatos(
                   this.ConjuntoCombi,
-                  this.Alfabeto1,
+                  this.AlfabetoCombi,
+                  this.AlfabetoPCombi,
                   this.GamaCombi,
                   this.E_inicialCombi,
                   this.E_FinalesCombi,
                   "Ac"
                 );
-                this.parsearGrafo();
+                this.parsearGrafo(true);
               } else {
                 this.mostrardatos(
                   this.ConjuntoQ2,
                   this.Alfabeto2,
+                  this.AlfabetoP2,
                   this.Gama2,
                   this.E_inicial2,
                   this.E_Finales2,
@@ -873,20 +918,26 @@ export default {
                 this.mostrardatos(
                   this.ConjuntoQ1,
                   this.Alfabeto1,
+                  this.AlfabetoP1,
                   this.Gama1,
                   this.E_inicial1,
                   this.E_Finales1,
                   "A1"
                 );
 
-                this.ConjuntoQ2.push("Ni");
+                this.ConjuntoQ2.splice(0, 0, "Ni");
                 this.ConjuntoQ2.push("Nf");
 
-                this.ConjuntoCombi = this.copiararray(
-                  this.ConjuntoQ2,
-                  this.ConjuntoQ1
+                this.ConjuntoCombi = this.Datos_dupli(
+                  this.copiararray(this.ConjuntoQ2, this.ConjuntoQ1)
                 );
                 this.GamaCombi = this.copiararray(this.Gama2, this.Gama1);
+                this.AlfabetoCombi = this.Datos_dupli(
+                  this.copiararray(this.Alfabeto2, this.Alfabeto1)
+                );
+                this.AlfabetoPCombi = this.Datos_dupli(
+                  this.copiararray(this.AlfabetoP2, this.AlfabetoP1)
+                );
                 this.E_FinalesCombi = this.copiararray(
                   this.E_Finales2,
                   this.E_Finales1
@@ -919,19 +970,19 @@ export default {
 
                 this.GamaCombi = this.epsilon(this.GamaCombi);
 
-                this.ConjuntoQ3 = this.copiararray(this.ConjuntoCombi, []);
-                this.Gama3 = this.copiararray(this.GamaCombi, []);
-                this.Alfabeto3 = this.copiararray(this.Alfabeto1, []);
-                this.E_Finales3 = this.copiararray(this.E_FinalesCombi, []);
+                this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
+                this.GamaPizarra = this.copiararray(this.GamaCombi, []);
+
                 this.mostrardatos(
                   this.ConjuntoCombi,
-                  this.Alfabeto1,
+                  this.AlfabetoCombi,
+                  this.AlfabetoPCombi,
                   this.GamaCombi,
                   this.E_inicialCombi,
                   this.E_FinalesCombi,
                   "Ac"
                 );
-                this.parsearGrafo();
+                this.parsearGrafo(true);
               }
             } else
               alert(
@@ -940,29 +991,6 @@ export default {
           } else alert("No deben quedar en blanco los campos de concatenacion");
         } else alert("No comparten concordancias en sus alfabetos");
       } else alert("Debe ingresar ambos automatas");
-    },
-    //                          q0,r0
-    comparar_eini(estado1, estado2) {
-      if (estado1 != "" && estado2 != "") {
-        if (estado1 == estado2) {
-          if (
-            estado2[0].charCodeAt() == 57 ||
-            estado2[0].charCodeAt() == 90 ||
-            estado2[0].charCodeAt() == 122
-          )
-            estado2 = estado2.replace(
-              estado2[0],
-              String.fromCharCode(estado2[0].charCodeAt() - 1)
-            );
-          else
-            estado2 = estado2.replace(
-              estado2[0],
-              String.fromCharCode(estado2[0].charCodeAt() + 1)
-            );
-          return estado2;
-        } else return estado1;
-      }
-      return estado1;
     },
     estados3deE(estado, gama) {
       var resultado = [];
@@ -1219,7 +1247,7 @@ export default {
           (palabra[i].charCodeAt() > 90 && palabra[i].charCodeAt() < 97) ||
           palabra[i].charCodeAt() > 122
         )
-        return false;
+          return false;
       }
       return true;
     },
@@ -1238,8 +1266,8 @@ export default {
       var object = [];
       arreglo.forEach((element) => {
         object.push({
-          from: this.Buscar_id(this.ConjuntoQ3, element[0]),
-          to: this.Buscar_id(this.ConjuntoQ3, element[4]),
+          from: this.Buscar_id(this.ConjuntoPizarra, element[0]),
+          to: this.Buscar_id(this.ConjuntoPizarra, element[4]),
           label: element[1] + "/" + element[2] + "/" + element[3],
         });
       });
@@ -1267,8 +1295,8 @@ export default {
     },
     graph() {
       console.log("graph()");
-      //   this.node = new vis.DataSet(visestado(ConjuntoQ3));
-      //   this.edge = new vis.DataSet(alfabetoxestado(Gama3));
+      //   this.node = new vis.DataSet(visestado(ConjuntoPizarra));
+      //   this.edge = new vis.DataSet(alfabetoxestado(GamaPizarra));
       //   this.container = document.getElementById("mynetwork");
       //   this.data = { nodes: node, edges: edge };
       //   this.options = { edges: { arrows: { to: { enabled: true } } } };
