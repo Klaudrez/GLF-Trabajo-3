@@ -1,31 +1,51 @@
 <template>
   <div class="home">
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-    <v-btn color="accent" depressed outlined raised @click="this.botoncito"
-      >¡Click! {{ this.contador }}</v-btn
+    <v-parallax
+    dark
+    style="background-color: #02182b;"
+  >
+    <v-row
+      align="center"
+      justify="center"
     >
+      <v-col
+        class=""
+        cols="12"
+      >
+        <h1 class="display-1 font-weight-thin mb-4">
+          Autómatas de pila y expresiones regulares
+        </h1>
+        <h2 class="headline font-weight mb-4">
+          Trabajo 3 - Grafos y Lenguajes Formales
+        </h2>
+        
+        <h4 class="subtitle-1">
+          Grupo 1
+        </h4>
+          <h4 class="subtitle-1 font-weight-thin" >
+          <ul style="margin: 0;">- Ignacio Sebastián Delgado Vargas</ul>
+          <ul style="margin: 0;">- Mariam Valeria Maldonado Marín</ul>
+          <ul style="margin: 0;">- Andrés Antonio Parada Claussen</ul>
+          <ul style="margin: 0;">- Marcelo Alberto Silva Escala</ul>
+          <ul style="margin: 0;">- Marcelo Ignacio Tapia Riquelme</ul>
+        </h4>
+      </v-col>
+    </v-row>
+  </v-parallax>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
   name: "Home",
   components: {
-    HelloWorld,
   },
   data() {
     return {
-      contador: 0,
     };
   },
   methods: {
-    botoncito() {
-      this.contador += 1;
-      console.log("Click", this.contador);
-    },
   },
 };
 </script>

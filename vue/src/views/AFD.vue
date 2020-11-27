@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Grafo :key="recargarGrafo" :grafo="grafo" />
+    <div v-if="grafo.nodos">
+      <Grafo :key="recargarGrafo" :grafo="grafo" />
+    </div>
     <h1 class="title">Datos autómata</h1>
     <v-container fluid>
       <v-row>
@@ -8,13 +10,16 @@
           <v-subheader>Conjunto de estados Q</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-combobox
             name="conjuntoQ"
+            clearable
             outlined
+            multiple
+            v-model="opcionesNodos"
+            :items="opcionesNodos"
             dense
             placeholder="q1,q2,q3,...,qn"
-            v-model="Nodos"
-          ></v-text-field>
+          ></v-combobox>
         </v-col>
         <v-col cols="4">
           <v-subheader>Formato: estado1,estado2,estado3,</v-subheader>
@@ -26,13 +31,16 @@
           <v-subheader>Alfabeto</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-combobox
             name="Alfabeto"
+            clearable
             outlined
+            multiple
+            v-model="opcionesAlfabeto"
+            :items="opcionesAlfabeto"
             dense
             placeholder="a,b,c,d,..."
-            v-model="Alfabeto"
-          ></v-text-field>
+          ></v-combobox>
         </v-col>
         <v-col cols="4">
           <v-subheader>Formato: letra/num,</v-subheader>
@@ -44,13 +52,16 @@
           <v-subheader>Estado inicial</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-select
             name="Inicial"
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
             outlined
             dense
             placeholder="q"
             v-model="Inicial"
-          ></v-text-field>
+          ></v-select>
         </v-col>
         <v-col cols="4">
           <v-subheader>Formato: estado,</v-subheader>
@@ -59,16 +70,71 @@
 
       <v-row>
         <v-col cols="2">
+          <v-subheader>Nueva transición</v-subheader>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            outlined
+            dense
+            placeholder="Origen"
+            v-model="transicion.origen"
+          ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesAlfabeto"
+            clearable
+            no-data-text="Debe ingresar alfabeto"
+            outlined
+            dense
+            placeholder="Alfabeto"
+            v-model="transicion.alfabeto"
+          ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            outlined
+            dense
+            placeholder="Destino"
+            v-model="transicion.destino"
+          ></v-select>
+        </v-col>
+        <v-col cols="4">
+          <v-btn
+            color="primary"
+            depressed
+            raised
+            @click="this.agregarTransicion"
+            >+ Transición</v-btn
+          >
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="2">
           <v-subheader>Función de transición</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
-            name="Gama"
+          <v-select
+            v-model="arregloGama"
+            :items="arregloGama"
+            chips
+            multiple
             outlined
-            dense
-            placeholder="q,a,q;"
-            v-model="GamaF"
-          ></v-text-field>
+            @change="changed()"
+          >
+            <template v-slot:selection="{ item }">
+              <v-chip close @click:close="eliminarGama(item)">
+                <strong>{{ item }}</strong>
+              </v-chip>
+            </template>
+          </v-select>
         </v-col>
         <v-col cols="4">
           <v-subheader
@@ -82,13 +148,17 @@
           <v-subheader>Estado(s) final(es)</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-select
             name="Finales"
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            multiple
             outlined
             dense
-            placeholder="q1,q2,q3,q4,..."
-            v-model="Finales"
-          ></v-text-field>
+            placeholder="q1,q2,q3,q4"
+            v-model="opcionFinales"
+          ></v-select>
         </v-col>
         <v-col cols="4">
           <v-subheader>Formato: estado,estado</v-subheader>
@@ -97,7 +167,11 @@
 
       <v-row>
         <v-col cols="12" style="display: flex; justify-content: center">
-          <v-btn color="secondary" depressed raised @click="this.ValidarEntrada1"
+          <v-btn
+            color="secondary"
+            depressed
+            raised
+            @click="this.ValidarEntrada1"
             >Ingresar autómata</v-btn
           >
           <v-btn color="primary" depressed raised @click="this.AFD_ER"
@@ -122,7 +196,18 @@ export default {
   components: { Grafo },
   data() {
     return {
+      opcionesNodos: [],
+      opcionesAlfabeto: [],
+      opcionFinales: [],
       grafo: {},
+      transicion: {
+        origen: null,
+        entradaPila: null,
+        alfabeto: null,
+        salidaPila: null,
+        destino: null,
+      },
+      arregloGama: [],
       Nodos: null,
       Alfabeto: null,
       Inicial: null,
@@ -147,8 +232,46 @@ export default {
       network: null,
     };
   },
-  mounted() {},
+  mounted() {
+    // ejemplo de log
+    // this.$store.commit('writeLog', {level: "info", message: "aaa"});
+  },
+  watch: {
+    arregloGama: function () {
+      this.GamaF = this.arregloGama.join(";");
+    },
+    opcionesNodos: function () {
+      this.Nodos = this.opcionesNodos.join(",");
+    },
+    opcionesAlfabeto: function () {
+      this.Alfabeto = this.opcionesAlfabeto.join(",");
+    },
+    opcionFinales: function () {
+      this.Finales = this.opcionFinales.join(",");
+    },
+  },
   methods: {
+    eliminarGama(item) {
+      this.arregloGama.splice(this.arregloGama.indexOf(item), 1);
+    },
+    agregarTransicion() {
+      if (this.transicion.origen != null && this.transicion.destino != null) {
+        var nueva =
+          this.transicion.origen +
+          "," +
+          (this.transicion.alfabeto ? this.transicion.alfabeto : "@") +
+          "," +
+          this.transicion.destino;
+        if (this.arregloGama.indexOf(nueva) == -1) {
+          this.arregloGama.push(nueva);
+        }
+        this.transicion = {
+          origen: null,
+          alfabeto: null,
+          destino: null,
+        };
+      }
+    },
     parsearGrafo() {
       if (this.ConjuntoP && this.GamaP != null) {
         var aristas = [];
@@ -162,8 +285,8 @@ export default {
             alfabeto: arista[1],
           });
         }
-        if(this.ConjuntoP.indexOf("Nf") != -1) {
-          nodosF.push("Nf")
+        if (this.ConjuntoP.indexOf("Nf") != -1) {
+          nodosF.push("Nf");
         }
         this.grafo = {
           nodos: this.ConjuntoP,
@@ -172,7 +295,6 @@ export default {
           aristas: aristas,
           finales: nodosF,
         };
-        console.log("grafo", this.grafo);
         this.recargarGrafo = !this.recargarGrafo;
       }
     },
@@ -303,18 +425,14 @@ export default {
     validar_gama(comparador1, comparador2, a_comparar) {
       for (let i = 0; i < a_comparar.length; i++) {
         if (!comparador1.includes(a_comparar[i][0])) {
-          console.log("a");
           return false;
         }
         if (
           !(comparador2.includes(a_comparar[i][1]) || a_comparar[i][1] == "$")
         ) {
-          console.log("a_comparar[i][1]", a_comparar[i][1]);
-          console.log("b");
           return false;
         }
         if (!comparador1.includes(a_comparar[i][2])) {
-          console.log("c");
           return false;
         }
       }
@@ -587,16 +705,6 @@ export default {
         if (arr1[z] == arr2[z]) return true;
       }
       return false;
-    },
-
-    graph() {
-      console.log("grafito");
-      //   node = new vis.DataSet(this.visestado(ConjuntoP));
-      //   edge = new vis.DataSet(this.alfabetoxestado(GamaP));
-      //   container = document.getElementById("mynetwork");
-      //   data = { nodes: node, edges: edge };
-      //   options = { edges: { arrows: { to: { enabled: true } } } };
-      //   network = new vis.Network(container, data, options);
     },
 
     //Fin funciones visualizacion y creacion de automata

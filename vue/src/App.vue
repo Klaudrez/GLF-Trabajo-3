@@ -1,15 +1,12 @@
 <template>
-<v-app>
-  <div id="app">
+  <v-app>
+    <div id="app">
       <Navbar />
-      <v-card
-    outlined
-    style="margin: 1%; padding: 1%;"
-  >
-   <router-view/>
+      <v-card outlined style="margin: 1%; padding: 1%">
+        <router-view />
       </v-card>
-  </div>
-</v-app>
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -19,10 +16,36 @@ export default {
   components: {
     Navbar,
   },
-}
+};
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap');
+
+html {
+  background-image: url("~@/assets/Background.jpg");
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.log-viewer {
+  font-family: "Courier New", Courier, monospace;
+  height: 300px !important;
+  overflow: auto; 
+  display: flex; 
+  flex-direction: column-reverse;
+}
+.auto-scroll {
+  margin-bottom: 8px !important;
+}
+.theme--light.v-application {
+  background: unset !important;
+}
+.v-parallax {
+  height: auto !important;
+  padding: 2%;
+}
 .v-btn {
   margin: 2px;
 }

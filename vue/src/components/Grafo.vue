@@ -20,7 +20,7 @@ import nodoFinal from "../assets/nodo-final.png";
 import nodoInicialFinal from "../assets/nodo-inicial-final.png";
 import nodoInicial from "../assets/nodo-inicial.png";
 import nodoNormal from "../assets/nodo.png";
-import cola from 'cytoscape-cola';
+import cola from "cytoscape-cola";
 
 export default {
   name: "Grafo",
@@ -68,14 +68,14 @@ export default {
           },
         },
         {
-        selector: 'edge',
-        style: {
-          'line-color': '#CCCCCC',
-          'target-arrow-color': '#CCCCCC',
-          'target-arrow-shape': 'triangle',
-          label: 'data(label)'
-        }
-      },
+          selector: "edge",
+          style: {
+            "line-color": "#CCCCCC",
+            "target-arrow-color": "#CCCCCC",
+            "target-arrow-shape": "triangle",
+            label: "data(label)",
+          },
+        },
       ],
       layout: { name: "circle" },
       userZoomingEnabled: false,
@@ -89,40 +89,45 @@ export default {
       });
     },
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {
     elementos() {
       var elementos = [];
-      for (let j = 0; j < this.grafo.nodos.length; j++) {
-        var nodo = this.grafo.nodos[j];
-        if (nodo != "") {
-          elementos.push({
-            classes: [
-              this.grafo.inicial.indexOf(nodo) != -1 ? "inicial" : "noInicial",
-              this.grafo.finales.indexOf(nodo) != -1 ? "final" : "noFinal",
-            ],
-            data: { id: nodo },
-            position: {
-              x: 1,
-              y: 1,
-            },
-            group: "nodes",
-          });
+      if (this.grafo.nodos) {
+        for (let j = 0; j < this.grafo.nodos.length; j++) {
+          var nodo = this.grafo.nodos[j];
+          if (nodo != "") {
+            elementos.push({
+              classes: [
+                this.grafo.inicial.indexOf(nodo) != -1
+                  ? "inicial"
+                  : "noInicial",
+                this.grafo.finales.indexOf(nodo) != -1 ? "final" : "noFinal",
+              ],
+              data: { id: nodo },
+              position: {
+                x: 1,
+                y: 1,
+              },
+              group: "nodes",
+            });
+          }
         }
       }
-      for (let i = 0; i < this.grafo.aristas.length; i++) {
-        var arista = this.grafo.aristas[i];
-        elementos.push({
-          data: {
-            id: i,
-            source: arista.origen,
-            target: arista.destino,
-            label: arista.alfabeto,
-            type: "loop",
-          },
-          group: "edges",
-        });
+      if (this.grafo.aristas) {
+        for (let i = 0; i < this.grafo.aristas.length; i++) {
+          var arista = this.grafo.aristas[i];
+          elementos.push({
+            data: {
+              id: i,
+              source: arista.origen,
+              target: arista.destino,
+              label: arista.alfabeto,
+              type: "loop",
+            },
+            group: "edges",
+          });
+        }
       }
       return elementos;
     },
@@ -133,7 +138,6 @@ export default {
       cy.layout(this.config.layout).run();
     },
     preConfig(cytoscape) {
-      console.log("calling pre-config");
       cytoscape.use(cola);
     },
   },

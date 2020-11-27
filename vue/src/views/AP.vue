@@ -79,8 +79,8 @@
         </tbody>
       </table>
     </div>
-    <div v-if="grafo.nodos.length > 0" >
-    <Grafo :key="recargarGrafo" :grafo="grafo" />
+    <div v-if="grafo.nodos.length > 0">
+      <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
     <h1 class="title">Datos autómatas</h1>
     <v-container fluid>
@@ -89,16 +89,19 @@
           <v-subheader>Conjunto de estados Q</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-combobox
             name="conjuntoQ"
+            clearable
             outlined
+            multiple
+            v-model="opcionesNodos"
+            :items="opcionesNodos"
             dense
             placeholder="q1,q2,q3,...,qn"
-            v-model="Nodos"
-          ></v-text-field>
+          ></v-combobox>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: q1,q2,q3,...,qn</v-subheader>
+          <v-subheader>Ingrese cada estado y pulse 'enter'</v-subheader>
         </v-col>
       </v-row>
 
@@ -107,16 +110,19 @@
           <v-subheader>Alfabeto pila</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
-            name="Alfabetopila"
+          <v-combobox
+            name="Alfabeto"
+            clearable
             outlined
+            multiple
+            v-model="opcionesAlfabetoPila"
+            :items="opcionesAlfabetoPila"
             dense
-            placeholder="x,y,z..."
-            v-model="Alfabetopila"
-          ></v-text-field>
+            placeholder="a,b,c,d,..."
+          ></v-combobox>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato:1,2,3,...,n</v-subheader>
+          <v-subheader>Ingrese cada valor presionando 'enter'</v-subheader>
         </v-col>
       </v-row>
 
@@ -125,16 +131,19 @@
           <v-subheader>Alfabeto</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-combobox
             name="Alfabeto"
+            clearable
             outlined
+            multiple
+            v-model="opcionesAlfabeto"
+            :items="opcionesAlfabeto"
             dense
             placeholder="a,b,c,d,..."
-            v-model="Alfabeto"
-          ></v-text-field>
+          ></v-combobox>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato:1,2,3,...,n</v-subheader>
+          <v-subheader>Ingrese cada valor presionando 'enter'</v-subheader>
         </v-col>
       </v-row>
 
@@ -143,16 +152,87 @@
           <v-subheader>Estado inicial</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-select
             name="Inicial"
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
             outlined
             dense
             placeholder="q"
             v-model="Inicial"
-          ></v-text-field>
+          ></v-select>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: q1</v-subheader>
+          <v-subheader>Seleccione un estado</v-subheader>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="2">
+          <v-subheader>Nueva transición</v-subheader>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            outlined
+            dense
+            placeholder="Origen"
+            v-model="transicion.origen"
+          ></v-select>
+          <v-select
+            :items="opcionesAlfabetoPila"
+            clearable
+            no-data-text="Debe ingresar alfabeto de la pila"
+            outlined
+            dense
+            placeholder="Salida pila"
+            v-model="transicion.salidaPila"
+          ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesAlfabeto"
+            clearable
+            no-data-text="Debe ingresar alfabeto"
+            outlined
+            dense
+            placeholder="Alfabeto"
+            v-model="transicion.alfabeto"
+          ></v-select>
+          <v-select
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            outlined
+            dense
+            placeholder="Destino"
+            v-model="transicion.destino"
+          ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            :items="opcionesAlfabetoPila"
+            clearable
+            no-data-text="Debe ingresar alfabeto de la pila"
+            outlined
+            dense
+            placeholder="Entrada pila"
+            v-model="transicion.entradaPila"
+          ></v-select>
+          <v-btn
+            color="primary"
+            block
+            depressed
+            raised
+            @click="this.agregarTransicion"
+            >+ Transición</v-btn
+          >
+        </v-col>
+        <v-col cols="4">
+          <v-subheader>Agregar nueva transición</v-subheader>
         </v-col>
       </v-row>
 
@@ -161,16 +241,24 @@
           <v-subheader>Función de transición</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
-            name="Gama"
+          <v-select
+            v-model="arregloGama"
+            :items="arregloGama"
+            chips
+            no-data-text="Debe agregar transiciones"
+            multiple
             outlined
-            dense
-            placeholder="q/a/q;"
-            v-model="GamaF"
-          ></v-text-field>
+            @change="changed()"
+          >
+            <template v-slot:selection="{ item }">
+              <v-chip close @click:close="eliminarGama(item)">
+                <strong>{{ item }}</strong>
+              </v-chip>
+            </template>
+          </v-select>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: q1,a,q2;q1,b,q1;...qn,n,qm</v-subheader>
+          <v-subheader>Formato: q1,alfabeto/pila/pila,q2</v-subheader>
         </v-col>
       </v-row>
 
@@ -179,16 +267,20 @@
           <v-subheader>Estado(s) final(es)</v-subheader>
         </v-col>
         <v-col cols="6">
-          <v-text-field
+          <v-select
             name="Finales"
+            :items="opcionesNodos"
+            clearable
+            no-data-text="Debe ingresar un conjunto de estados"
+            multiple
             outlined
             dense
             placeholder="q1,q2,q3,q4"
-            v-model="Finales"
-          ></v-text-field>
+            v-model="opcionFinales"
+          ></v-select>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: q1,q2,...,qn</v-subheader>
+          <v-subheader>Seleccione uno o más estados</v-subheader>
         </v-col>
       </v-row>
 
@@ -222,25 +314,29 @@
           <v-subheader>Inicio</v-subheader>
         </v-col>
         <v-col cols="2">
-          <v-text-field
+          <v-select
             name="concatenarinicio"
+            clearable
+            :items="opciones"
             outlined
             dense
             placeholder="Inicio"
             v-model="Conca1"
-          ></v-text-field>
+          ></v-select>
         </v-col>
         <v-col cols="1">
           <v-subheader>Final</v-subheader>
         </v-col>
         <v-col cols="2">
-          <v-text-field
+          <v-select
             name="concatenarfinal"
+            clearable
+            :items="opciones"
             outlined
             dense
             placeholder="Final"
             v-model="Conca2"
-          ></v-text-field>
+          ></v-select>
         </v-col>
       </v-row>
       <v-row>
@@ -272,6 +368,18 @@ export default {
         aristas: [],
         finales: [],
       },
+      transicion: {
+        origen: null,
+        entradaPila: null,
+        alfabeto: null,
+        salidaPila: null,
+        destino: null,
+      },
+      arregloGama: [],
+      opcionesNodos: [],
+      opcionesAlfabetoPila: [],
+      opcionesAlfabeto: [],
+      opcionFinales: [],
       recargarGrafo: false,
       mostrar: false,
       Nodos: null,
@@ -281,6 +389,7 @@ export default {
       GamaF: null,
       Conca1: null,
       Conca2: null,
+      opciones: ["1", "2"],
       Finales: null,
       E_inicial1: "",
       E_inicial2: "",
@@ -311,19 +420,56 @@ export default {
     };
   },
   mounted() {},
+  watch: {
+    arregloGama: function () {
+      this.GamaF = this.arregloGama.join(";");
+    },
+    opcionesNodos: function () {
+      this.Nodos = this.opcionesNodos.join(",");
+    },
+    opcionesAlfabetoPila: function () {
+      this.Alfabetopila = this.opcionesAlfabetoPila.join(",");
+    },
+    opcionesAlfabeto: function () {
+      this.Alfabeto = this.opcionesAlfabeto.join(",");
+    },
+    opcionFinales: function () {
+      this.Finales = this.opcionFinales.join(",");
+    },
+  },
   methods: {
+    eliminarGama(item) {
+      this.arregloGama.splice(this.arregloGama.indexOf(item), 1);
+    },
+    agregarTransicion() {
+      if (this.transicion.origen != null && this.transicion.destino != null) {
+        var nueva =
+          this.transicion.origen +
+          "," +
+          (this.transicion.alfabeto ? this.transicion.alfabeto : "@") +
+          "/" +
+          (this.transicion.entradaPila ? this.transicion.entradaPila : "@") +
+          "/" +
+          (this.transicion.salidaPila ? this.transicion.salidaPila : "@") +
+          "," +
+          this.transicion.destino;
+        if (this.arregloGama.indexOf(nueva) == -1) {
+          this.arregloGama.push(nueva);
+        }
+        this.transicion = {
+          origen: null,
+          entradaPila: null,
+          alfabeto: null,
+          salidaPila: null,
+          destino: null,
+        };
+      }
+    },
     parsearGrafo(funcion) {
-      console.log("this.GamaPizarra", this.GamaPizarra);
-      console.log("this.ConjuntoPizarra", this.ConjuntoPizarra);
       if (this.ConjuntoPizarra && this.GamaPizarra != null) {
         var aristas = [];
-        var nodosF = funcion
-          ? this.E_FinalesCombi
-          : this.Finales.split(",");
-        // if (this.Conca2 != null) {
-        //   nodosF.push(this.Conca2);
-        // }
-        if(this.grafo.finales.length > 0 && !funcion) {
+        var nodosF = funcion ? this.E_FinalesCombi : this.Finales.split(",");
+        if (this.grafo.finales.length > 0 && !funcion) {
           nodosF = nodosF.concat(this.grafo.finales);
         }
         for (var i = 0; i < this.GamaPizarra.length; i++) {
@@ -338,7 +484,7 @@ export default {
         if (inicial.indexOf(this.Inicial) == -1) {
           inicial.push(this.Inicial);
         }
-        if(funcion) {
+        if (funcion) {
           inicial = [];
           inicial.push(this.E_inicialCombi);
         }
@@ -351,7 +497,6 @@ export default {
           aristas: aristas,
           finales: nodosF,
         };
-        console.log("grafo", this.grafo);
         this.recargarGrafo = !this.recargarGrafo;
       }
     },
@@ -388,9 +533,13 @@ export default {
         G == null ||
         this.E_inicial1 == null ||
         F == null
-      )
+      ) {
+        this.$store.commit("writeLog", {
+          level: "error",
+          message: "Autómata 1: Hay uno o más campos sin definir",
+        });
         alert("Hay campos en blanco");
-      else {
+      } else {
         if (
           valQ.test(Q) &&
           valA.test(A) &&
@@ -456,6 +605,11 @@ export default {
 
               this.parsearGrafo(false);
             } else {
+              this.$store.commit("writeLog", {
+                level: "error",
+                message:
+                  "Autómata 1: La función de transición contiene estados o alfabetos no declarados",
+              });
               alert(
                 "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
               );
@@ -469,6 +623,11 @@ export default {
               );
             }
           } else {
+            this.$store.commit("writeLog", {
+              level: "error",
+              message:
+                "Autómata 1: El estado inicial no se encuentra en el conjunto de estados",
+            });
             alert(
               "Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados"
             );
@@ -534,9 +693,13 @@ export default {
         this.E_inicial2 == null ||
         P == null ||
         F == null
-      )
+      ) {
+        this.$store.commit("writeLog", {
+          level: "error",
+          message: "Autómata 2: Hay uno o más campos sin definir",
+        });
         alert("Hay campos en blanco");
-      else {
+      } else {
         if (
           valQ.test(Q) &&
           valA.test(A) &&
@@ -604,6 +767,11 @@ export default {
 
               this.parsearGrafo(false);
             } else {
+              this.$store.commit("writeLog", {
+                level: "error",
+                message:
+                  "Autómata 2: La función de transición contiene estados o alfabetos no declarados",
+              });
               alert(
                 "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
               );
@@ -617,6 +785,11 @@ export default {
               );
             }
           } else {
+            this.$store.commit("writeLog", {
+              level: "error",
+              message:
+                "Autómata 2: El estado inicial no se encuentra en el conjunto de estados",
+            });
             alert(
               "Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados"
             );
@@ -714,7 +887,7 @@ export default {
       return true;
     },
     limpiar() {
-      //   console.clear();
+      console.clear();
     },
     mostrardatos(
       conjunto,
@@ -754,18 +927,14 @@ export default {
             this.E_Finales2,
             "A2"
           );
-
           var inicio1 = this.ConjuntoQ1[0];
           var inicio2 = this.ConjuntoQ2[0];
-
           this.E_inicialCombi = "X";
-
           this.ConjuntoCombi = this.copiararray(
             this.ConjuntoQ1,
             this.ConjuntoQ2
           );
           this.ConjuntoCombi.splice(0, 0, this.E_inicialCombi);
-
           this.GamaCombi = this.copiararray(this.Gama1, this.Gama2);
 
           this.GamaCombi.splice(
@@ -778,19 +947,13 @@ export default {
             0,
             this.añadirtransicion(this.E_inicialCombi, "@", "@", "@", inicio2)
           );
-
           this.GamaCombi = this.epsilon(this.GamaCombi);
-
           this.E_FinalesCombi = this.copiararray(
             this.E_Finales1,
             this.E_Finales2
           );
-
-          this.ConjuntoQ3 = this.copiararray(this.ConjuntoCombi, []);
-          this.Gama3 = this.copiararray(this.GamaCombi, []);
-          this.Alfabeto3 = this.copiararray(this.Alfabeto1, []);
-          this.E_Finales3 = this.copiararray(this.E_FinalesCombi, []);
-
+          this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
+          this.GamaPizarra = this.copiararray(this.GamaCombi, []);
           this.mostrardatos(
             this.ConjuntoCombi,
             this.Alfabeto1,
@@ -1292,15 +1455,6 @@ export default {
         if (arr1[z] == arr2[z]) return true;
       }
       return false;
-    },
-    graph() {
-      console.log("graph()");
-      //   this.node = new vis.DataSet(visestado(ConjuntoPizarra));
-      //   this.edge = new vis.DataSet(alfabetoxestado(GamaPizarra));
-      //   this.container = document.getElementById("mynetwork");
-      //   this.data = { nodes: node, edges: edge };
-      //   this.options = { edges: { arrows: { to: { enabled: true } } } };
-      //   this.network = new vis.Network(container, data, options);
     },
 
     //Fin funciones visualizacion y creacion de automata
