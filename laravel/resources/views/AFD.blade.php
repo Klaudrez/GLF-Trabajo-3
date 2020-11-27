@@ -847,7 +847,7 @@ function Afd_to_Er(estados,alfabeto,gama,e_finales,e_inicial)
     e_finales=NuevoFinal(estados,gama,e_finales)
 
 
-  while(TieneSalidas(e_inicial,gama) && estados.length>2)
+  while(TieneSalidas(e_inicial,gama) && existeintermedio(estados,gama))
   {
     var eliminar=Terna_estados(e_inicial,gama)
     var estados_s=Salidas_de_x(eliminar[1],gama)
@@ -885,6 +885,15 @@ function Afd_to_Er(estados,alfabeto,gama,e_finales,e_inicial)
   ConjuntoP=Pizarra(estados)
   GamaP=Pizarra(gama)
   graph()
+  alert("La expresión regular es: "+MostrarER(e_inicial,gama,e_finales))
+
+}
+
+function MostrarER(estado1,gama,estado2)
+{
+  for(let i=0;i<gama.length;i++)
+    if(gama[i][0]==estado1 && gama[i][2]==estado2)
+      return gama[i][1]
 }
 
 function mostrargama(gama)
@@ -1127,6 +1136,25 @@ function Terna_estados(estado,gama)
   }
 
 }
+
+function existeintermedio(estados,gama)
+{
+	for(let i=0;i<estados.length;i++)
+  {
+  	if(Salidas_de_x(estados[i],gama).length>0)
+    {
+    	var salidas=Salidas_de_x(estados[i],gama)
+      
+      for(let j=0;j<salidas.length;j++)
+      {
+      	if(Salidas_de_x(salidas[j],gama).length>0)
+        	return true
+      }
+    }
+  }
+  return false
+}
+
 </script>
 </body>
 </html>
