@@ -208,6 +208,8 @@ function ValidarEntrada1()
               mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
 
               graph()
+
+              alert(strestados(ConjuntoQ1) +strgama(Gama1))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -302,6 +304,7 @@ function ValidarEntrada2()
               mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
 
               graph()
+              alert(strestados(ConjuntoQ2) +strgama(Gama2))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -944,6 +947,28 @@ function existealfa(string,arreglo)
     if(!arreglo.includes(strr[i]))
       return false
   return true
+}
+
+function strgama(gama)
+{
+    var str="y las transiciones son: \n"
+  for(let i=0;i<gama.length;i++)
+      str=str+gama[i][0]+" - "+gama[i][1]+"/"+gama[i][2]+"/"+gama[i][3]+" - "+gama[i][4]+"\n"
+     return str
+}
+
+function strestados(estados)
+{
+  var str="Los estados son: \n"
+  for(let i=0;i<estados.length;i++){
+    if(i!=estados.length - 1){
+       str=str+estados[i]+" - "
+    }
+    else
+      str=str+estados[i]+" \n"
+  }
+
+  return str
 }
 
 </script>
