@@ -429,6 +429,7 @@ function Union()
 
       mostrardatos(ConjuntoCombi,Alfabeto1,AlfabetoP1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Au")
       graph()
+      alert(strestados(ConjuntoCombi) +strgama(GamaCombi))
     }
     else
       alert("Los automatas no tienen coincidencias en sus alfabetos")
@@ -505,6 +506,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
+            alert(strestados(ConjuntoCombi) +strgama(GamaCombi))
           }
           else
           {
@@ -544,6 +546,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
+            alert(strestados(ConjuntoCombi) +strgama(GamaCombi))
           }
         }
         else
