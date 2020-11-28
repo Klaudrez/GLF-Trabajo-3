@@ -4,13 +4,13 @@
       <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
     <div v-if="alerta.estado">
-      <v-alert text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
         alerta.mensaje
       }}</v-alert>
-      <v-alert text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
         alerta.mensaje
       }}</v-alert>
-      <v-alert text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
         alerta.mensaje
       }}</v-alert>
     </div>
@@ -575,13 +575,14 @@ export default {
                 true,
                 1,
                 "Se ha ingresado el autómata 1 con éxito. " +
-                  this.strestados(this.ConjuntoQ1) +
-                  this.strgama(this.Gama1)
+                  this.alertasAP(
+                    this.E_inicial1,
+                    this.E_Finales1,
+                    this.ConjuntoQ1,
+                    this.Gama1
+                  )
               );
               this.limpiarFormulario();
-              // alert(
-              //   this.strestados(this.ConjuntoQ1) + this.strgama(this.Gama1)
-              // );
               this.parsearGrafo(false);
             } else {
               this.$store.commit("writeLog", {
@@ -758,13 +759,14 @@ export default {
                 true,
                 1,
                 "Se ha ingresado el autómata 2 con éxito. " +
-                  this.strestados(this.ConjuntoQ2) +
-                  this.strgama(this.Gama2)
+                  this.alertasAP(
+                    this.E_inicial2,
+                    this.E_Finales2,
+                    this.ConjuntoQ2,
+                    this.Gama2
+                  )
               );
               this.limpiarFormulario();
-              // alert(
-              //   this.strestados(this.ConjuntoQ2) + this.strgama(this.Gama2)
-              // );
               this.parsearGrafo(false);
             } else {
               this.$store.commit("writeLog", {
@@ -877,12 +879,12 @@ export default {
       e_inicial,
       e_finales
     ) {
-      estados = estados.splice(0, estados.length);
-      alfabeto = alfabeto.splice(0, alfabeto.length);
-      alfabetopila = alfabetopila.splice(0, alfabeto.length);
-      gama = gama.splice(0, gama.length);
+      estados = [];
+      alfabeto = [];
+      alfabetopila = [];
+      gama = [];
       e_inicial = null;
-      e_finales = e_finales.splice(0, e_finales.length);
+      e_finales = [];
       console.log(e_finales);
       return e_inicial;
     },
@@ -915,7 +917,7 @@ export default {
       return true;
     },
     limpiar() {
-      // console.clear();
+      console.clear();
     },
     mostrardatos(
       conjunto,
@@ -1002,8 +1004,12 @@ export default {
             true,
             1,
             "Se han unido los automatas. " +
-              this.strestados(this.ConjuntoCombi) +
-              this.strgama(this.GamaCombi)
+              this.alertasAP(
+                this.E_inicialCombi,
+                this.E_FinalesCombi,
+                this.ConjuntoCombi,
+                this.GamaCombi
+              )
           );
           this.parsearGrafo(true);
         } else {
@@ -1137,8 +1143,12 @@ export default {
                   true,
                   1,
                   "Se han concatenado los autómatas. " +
-                    this.strestados(this.ConjuntoCombi) +
-                    this.strgama(this.GamaCombi)
+                    this.alertasAP(
+                      this.E_inicialCombi,
+                      this.E_FinalesCombi,
+                      this.ConjuntoCombi,
+                      this.GamaCombi
+                    )
                 );
                 this.parsearGrafo(true);
               } else {
@@ -1230,8 +1240,12 @@ export default {
                   true,
                   1,
                   "Se han concatenado los autómatas. " +
-                    this.strestados(this.ConjuntoCombi) +
-                    this.strgama(this.GamaCombi)
+                    this.alertasAP(
+                      this.E_inicialCombi,
+                      this.E_FinalesCombi,
+                      this.ConjuntoCombi,
+                      this.GamaCombi
+                    )
                 );
               }
             } else {
@@ -1634,7 +1648,7 @@ export default {
       return true;
     },
     strgama(gama) {
-      var str = "y las transiciones son: \n";
+      var str = "Transicion(es): \n";
       for (let i = 0; i < gama.length; i++)
         str =
           str +
@@ -1650,14 +1664,38 @@ export default {
           "\n";
       return str;
     },
+    strfinales(gama) {
+      var str = "Estado(s) final(es): \n";
+      for (let i = 0; i < gama.length; i++) {
+        if (i != gama.length - 1) {
+          str = str + gama[i] + " - ";
+        } else {
+          str = str + gama[i] + "\n";
+        }
+      }
+
+      return str;
+    },
     strestados(estados) {
-      var str = "Los estados son: \n";
+      var str = "Estado(s): \n";
       for (let i = 0; i < estados.length; i++) {
         if (i != estados.length - 1) {
           str = str + estados[i] + " - ";
-        } else str = str + estados[i] + " \n";
+        } else {
+          str = str + estados[i] + "\n";
+        }
       }
       return str;
+    },
+    alertasAP(E_inicial, E_Finales, Conjunto, Gama) {
+      return (
+        "Estado inicial: \n" +
+        E_inicial +
+        "\n" +
+        this.strfinales(E_Finales) +
+        this.strestados(Conjunto) +
+        this.strgama(Gama)
+      );
     },
   },
 };

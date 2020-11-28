@@ -4,13 +4,13 @@
       <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
     <div v-if="alerta.estado">
-      <v-alert text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
         alerta.mensaje
       }}</v-alert>
-      <v-alert text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
         alerta.mensaje
       }}</v-alert>
-      <v-alert text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
+      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
         alerta.mensaje
       }}</v-alert>
     </div>

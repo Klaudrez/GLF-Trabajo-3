@@ -29,6 +29,9 @@ html {
   background-repeat: no-repeat;
   background-size: cover;
 }
+.multi-line {
+  white-space: pre-line;
+}
 .log-viewer {
   font-family: "Courier New", Courier, monospace;
   height: 300px !important;
