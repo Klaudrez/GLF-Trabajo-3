@@ -852,37 +852,49 @@ export default {
       this.limpiar();
       console.log("Datos borrados.");
       this.limpiarFormulario();
-      this.E_inicial1 = this.ResetearAutomata(
+      /* this.E_inicial1 = this.ResetearAutomata(
         this.ConjuntoQ1,
         this.Alfabeto1,
         this.AlfabetoP1,
         this.Gama1,
         this.E_inicial1,
         this.E_Finales1
-      );
-
-      this.E_inicial2 = this.ResetearAutomata(
+      ); */
+      this.ConjuntoQ1 = [];
+      this.Alfabeto1 = [];
+      this.AlfabetoP1 = [];
+      this.Gama1 = [];
+      this.E_inicial1 = null;
+      this.E_Finales1 = [];
+      /* this.E_inicial2 = this.ResetearAutomata(
         this.ConjuntoQ2,
         this.Alfabeto2,
         this.AlfabetoP2,
         this.Gama2,
         this.E_inicial2,
         this.E_Finales2
-      );
+      ); */
+      this.ConjuntoQ2 = [];
+      this.Alfabeto2 = [];
+      this.AlfabetoP2 = [];
+      this.Gama2 = [];
+      this.E_inicial2 = null;
+      this.E_Finales2 = [];
 
-      this.E_inicialCombi = this.ResetearAutomata(
+      /* this.E_inicialCombi = this.ResetearAutomata(
         this.ConjuntoCombi,
         this.AlfabetoCombi,
         this.AlfabetoPCombi,
         this.GamaCombi,
         this.E_inicialCombi,
         this.E_FinalesCombi
-      );
+      ); */
       this.ConjuntoPizarra = this.copiararray(this.ConjuntoQ1, this.ConjuntoQ2);
       this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
       this.limpiarResultado();
       this.parsearGrafo(true);
       this.parsearGrafo(false);
+      console.log(this.ConjuntoQ1,this.ConjuntoQ2,this.ConjuntoCombi,this.ConjuntoPizarra)
       this.$store.commit("writeLog", {
         level: "info",
         message: "Se han borrado los datos de ambos autómatas",
@@ -1082,246 +1094,234 @@ export default {
       this.limpiar();
       this.limpiarResultado();
       if (this.ConjuntoQ1.length > 0 && this.ConjuntoQ2.length > 0) {
-        if (this.compararalfabeto(this.Alfabeto1, this.Alfabeto2)) {
-          var a1 = this.Conca1;
-          var a2 = this.Conca2;
-          if (a1.length > 0 && a2.length > 0) {
-            if (
-              (a1 == "1" || a1 == "2") &&
-              (a2 == "1" || a2 == "2") &&
-              a1 != a2
-            ) {
-              if (a1 == "1") {
-                this.mostrardatos(
-                  this.ConjuntoQ1,
-                  this.Alfabeto1,
-                  this.AlfabetoP1,
-                  this.Gama1,
-                  this.E_inicial1,
-                  this.E_Finales1,
-                  "A1"
-                );
-                this.mostrardatos(
-                  this.ConjuntoQ2,
-                  this.Alfabeto2,
-                  this.AlfabetoP2,
-                  this.Gama2,
-                  this.E_inicial2,
-                  this.E_Finales2,
-                  "A2"
-                );
+        var a1 = this.Conca1;
+        var a2 = this.Conca2;
+        if (a1.length > 0 && a2.length > 0) {
+          if (
+            (a1 == "1" || a1 == "2") &&
+            (a2 == "1" || a2 == "2") &&
+            a1 != a2
+          ) {
+            if (a1 == "1") {
+              this.mostrardatos(
+                this.ConjuntoQ1,
+                this.Alfabeto1,
+                this.AlfabetoP1,
+                this.Gama1,
+                this.E_inicial1,
+                this.E_Finales1,
+                "A1"
+              );
+              this.mostrardatos(
+                this.ConjuntoQ2,
+                this.Alfabeto2,
+                this.AlfabetoP2,
+                this.Gama2,
+                this.E_inicial2,
+                this.E_Finales2,
+                "A2"
+              );
 
-                var conjuntoAux = JSON.parse(JSON.stringify(this.ConjuntoQ1));
+              var conjuntoAux = JSON.parse(JSON.stringify(this.ConjuntoQ1));
 
-                conjuntoAux.splice(0, 0, "Ni");
-                conjuntoAux.push("Nf");
+              conjuntoAux.splice(0, 0, "Ni");
+              conjuntoAux.push("Nf");
 
-                this.ConjuntoCombi = this.Datos_dupli(
-                  this.copiararray(conjuntoAux, this.ConjuntoQ2)
-                );
-                this.GamaCombi = this.copiararray(this.Gama1, this.Gama2);
-                this.AlfabetoCombi = this.Datos_dupli(
-                  this.copiararray(this.Alfabeto1, this.Alfabeto2)
-                );
-                this.AlfabetoPCombi = this.Datos_dupli(
-                  this.copiararray(this.AlfabetoP1, this.AlfabetoP2)
-                );
-                this.E_FinalesCombi = this.copiararray(
-                  this.E_Finales1,
-                  this.E_Finales2
-                );
+              this.ConjuntoCombi = this.Datos_dupli(
+                this.copiararray(conjuntoAux, this.ConjuntoQ2)
+              );
+              this.GamaCombi = this.copiararray(this.Gama1, this.Gama2);
+              this.AlfabetoCombi = this.Datos_dupli(
+                this.copiararray(this.Alfabeto1, this.Alfabeto2)
+              );
+              this.AlfabetoPCombi = this.Datos_dupli(
+                this.copiararray(this.AlfabetoP1, this.AlfabetoP2)
+              );
+              this.E_FinalesCombi = this.copiararray(
+                this.E_Finales1,
+                this.E_Finales2
+              );
 
-                this.E_inicialCombi = "Ni";
+              this.E_inicialCombi = "Ni";
 
+              this.GamaCombi.splice(
+                0,
+                0,
+                this.añadirtransicion("Ni", "@", "@", "P", this.E_inicial1)
+              );
+
+              var copia_e_f = this.copiararray(this.E_Finales1, []);
+
+              for (let i = 0; i < copia_e_f.length; i++) {
                 this.GamaCombi.splice(
                   0,
                   0,
-                  this.añadirtransicion("Ni", "@", "@", "P", this.E_inicial1)
+                  this.añadirtransicion(copia_e_f[i], "@", "P", "@", "Nf")
                 );
-
-                var copia_e_f = this.copiararray(this.E_Finales1, []);
-
-                for (let i = 0; i < copia_e_f.length; i++) {
-                  this.GamaCombi.splice(
-                    0,
-                    0,
-                    this.añadirtransicion(copia_e_f[i], "@", "P", "@", "Nf")
-                  );
-                  copia_e_f.splice(i, 1);
-                  this.E_FinalesCombi.splice(i, 1);
-                  i = -1;
-                }
-
-                this.GamaCombi.push(
-                  this.añadirtransicion("Nf", "@", "@", "@", this.E_inicial2)
-                );
-
-                this.GamaCombi = this.epsilon(this.GamaCombi);
-
-                this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
-                this.GamaPizarra = this.copiararray(this.GamaCombi, []);
-
-                this.mostrardatos(
-                  this.ConjuntoCombi,
-                  this.AlfabetoCombi,
-                  this.AlfabetoPCombi,
-                  this.GamaCombi,
-                  this.E_inicialCombi,
-                  this.E_FinalesCombi,
-                  "Ac"
-                );
-                this.$store.commit("writeLog", {
-                  level: "info",
-                  message:
-                    "Concatenación: " +
-                    this.strestados(this.ConjuntoCombi) +
-                    this.strgama(this.GamaCombi),
-                });
-                this.crearAlerta(
-                  true,
-                  1,
-                  "Se han concatenado los autómatas. " +
-                    this.alertasAP(
-                      this.E_inicialCombi,
-                      this.E_FinalesCombi,
-                      this.ConjuntoCombi,
-                      this.GamaCombi
-                    )
-                );
-                this.parsearGrafo(true);
-              } else {
-                this.mostrardatos(
-                  this.ConjuntoQ2,
-                  this.Alfabeto2,
-                  this.AlfabetoP2,
-                  this.Gama2,
-                  this.E_inicial2,
-                  this.E_Finales2,
-                  "A2"
-                );
-                this.mostrardatos(
-                  this.ConjuntoQ1,
-                  this.Alfabeto1,
-                  this.AlfabetoP1,
-                  this.Gama1,
-                  this.E_inicial1,
-                  this.E_Finales1,
-                  "A1"
-                );
-
-                this.ConjuntoQ2.splice(0, 0, "Ni");
-                this.ConjuntoQ2.push("Nf");
-
-                this.ConjuntoCombi = this.Datos_dupli(
-                  this.copiararray(this.ConjuntoQ2, this.ConjuntoQ1)
-                );
-                this.GamaCombi = this.copiararray(this.Gama2, this.Gama1);
-                this.AlfabetoCombi = this.Datos_dupli(
-                  this.copiararray(this.Alfabeto2, this.Alfabeto1)
-                );
-                this.AlfabetoPCombi = this.Datos_dupli(
-                  this.copiararray(this.AlfabetoP2, this.AlfabetoP1)
-                );
-                this.E_FinalesCombi = this.copiararray(
-                  this.E_Finales2,
-                  this.E_Finales1
-                );
-
-                this.E_inicialCombi = "Ni";
-
-                this.GamaCombi.splice(
-                  0,
-                  0,
-                  this.añadirtransicion("Ni", "@", "@", "P", this.E_inicial2)
-                );
-
-                copia_e_f = this.copiararray(this.E_Finales2, []);
-
-                for (let i = 0; i < copia_e_f.length; i++) {
-                  this.GamaCombi.splice(
-                    0,
-                    0,
-                    this.añadirtransicion(copia_e_f[i], "@", "P", "@", "Nf")
-                  );
-                  copia_e_f.splice(i, 1);
-                  this.E_FinalesCombi.splice(i, 1);
-                  i = -1;
-                }
-
-                this.GamaCombi.push(
-                  this.añadirtransicion("Nf", "@", "@", "@", this.E_inicial1)
-                );
-
-                this.GamaCombi = this.epsilon(this.GamaCombi);
-
-                this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
-                this.GamaPizarra = this.copiararray(this.GamaCombi, []);
-
-                this.mostrardatos(
-                  this.ConjuntoCombi,
-                  this.AlfabetoCombi,
-                  this.AlfabetoPCombi,
-                  this.GamaCombi,
-                  this.E_inicialCombi,
-                  this.E_FinalesCombi,
-                  "Ac"
-                );
-                this.parsearGrafo(true);
-                this.$store.commit("writeLog", {
-                  level: "info",
-                  message:
-                    "Concatenación: " +
-                    this.strestados(this.ConjuntoCombi) +
-                    this.strgama(this.GamaCombi),
-                });
-                this.crearAlerta(
-                  true,
-                  1,
-                  "Se han concatenado los autómatas. " +
-                    this.alertasAP(
-                      this.E_inicialCombi,
-                      this.E_FinalesCombi,
-                      this.ConjuntoCombi,
-                      this.GamaCombi
-                    )
-                );
+                copia_e_f.splice(i, 1);
+                this.E_FinalesCombi.splice(i, 1);
+                i = -1;
               }
-            } else {
+
+              this.GamaCombi.push(
+                this.añadirtransicion("Nf", "@", "@", "@", this.E_inicial2)
+              );
+
+              this.GamaCombi = this.epsilon(this.GamaCombi);
+
+              this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
+              this.GamaPizarra = this.copiararray(this.GamaCombi, []);
+
+              this.mostrardatos(
+                this.ConjuntoCombi,
+                this.AlfabetoCombi,
+                this.AlfabetoPCombi,
+                this.GamaCombi,
+                this.E_inicialCombi,
+                this.E_FinalesCombi,
+                "Ac"
+              );
               this.$store.commit("writeLog", {
                 level: "info",
                 message:
-                  "Fallo concatenación: autómatas ingresados no coinciden o están duplicados",
+                  "Concatenación: " +
+                  this.strestados(this.ConjuntoCombi) +
+                  this.strgama(this.GamaCombi),
               });
               this.crearAlerta(
                 true,
-                3,
-                "Los autómatas ingresados no coinciden con [1,2] o ingresó el mismo autómata dos veces"
+                1,
+                "Se han concatenado los autómatas. " +
+                  this.alertasAP(
+                    this.E_inicialCombi,
+                    this.E_FinalesCombi,
+                    this.ConjuntoCombi,
+                    this.GamaCombi
+                  )
+              );
+              this.parsearGrafo(true);
+            } else {
+              this.mostrardatos(
+                this.ConjuntoQ2,
+                this.Alfabeto2,
+                this.AlfabetoP2,
+                this.Gama2,
+                this.E_inicial2,
+                this.E_Finales2,
+                "A2"
+              );
+              this.mostrardatos(
+                this.ConjuntoQ1,
+                this.Alfabeto1,
+                this.AlfabetoP1,
+                this.Gama1,
+                this.E_inicial1,
+                this.E_Finales1,
+                "A1"
+              );
+
+              this.ConjuntoQ2.splice(0, 0, "Ni");
+              this.ConjuntoQ2.push("Nf");
+
+              this.ConjuntoCombi = this.Datos_dupli(
+                this.copiararray(this.ConjuntoQ2, this.ConjuntoQ1)
+              );
+              this.GamaCombi = this.copiararray(this.Gama2, this.Gama1);
+              this.AlfabetoCombi = this.Datos_dupli(
+                this.copiararray(this.Alfabeto2, this.Alfabeto1)
+              );
+              this.AlfabetoPCombi = this.Datos_dupli(
+                this.copiararray(this.AlfabetoP2, this.AlfabetoP1)
+              );
+              this.E_FinalesCombi = this.copiararray(
+                this.E_Finales2,
+                this.E_Finales1
+              );
+
+              this.E_inicialCombi = "Ni";
+
+              this.GamaCombi.splice(
+                0,
+                0,
+                this.añadirtransicion("Ni", "@", "@", "P", this.E_inicial2)
+              );
+
+              copia_e_f = this.copiararray(this.E_Finales2, []);
+
+              for (let i = 0; i < copia_e_f.length; i++) {
+                this.GamaCombi.splice(
+                  0,
+                  0,
+                  this.añadirtransicion(copia_e_f[i], "@", "P", "@", "Nf")
+                );
+                copia_e_f.splice(i, 1);
+                this.E_FinalesCombi.splice(i, 1);
+                i = -1;
+              }
+
+              this.GamaCombi.push(
+                this.añadirtransicion("Nf", "@", "@", "@", this.E_inicial1)
+              );
+
+              this.GamaCombi = this.epsilon(this.GamaCombi);
+
+              this.ConjuntoPizarra = this.copiararray(this.ConjuntoCombi, []);
+              this.GamaPizarra = this.copiararray(this.GamaCombi, []);
+
+              this.mostrardatos(
+                this.ConjuntoCombi,
+                this.AlfabetoCombi,
+                this.AlfabetoPCombi,
+                this.GamaCombi,
+                this.E_inicialCombi,
+                this.E_FinalesCombi,
+                "Ac"
+              );
+              this.parsearGrafo(true);
+              this.$store.commit("writeLog", {
+                level: "info",
+                message:
+                  "Concatenación: " +
+                  this.strestados(this.ConjuntoCombi) +
+                  this.strgama(this.GamaCombi),
+              });
+              this.crearAlerta(
+                true,
+                1,
+                "Se han concatenado los autómatas. " +
+                  this.alertasAP(
+                    this.E_inicialCombi,
+                    this.E_FinalesCombi,
+                    this.ConjuntoCombi,
+                    this.GamaCombi
+                  )
               );
             }
           } else {
             this.$store.commit("writeLog", {
               level: "info",
               message:
-                "Fallo concatenación: no deben quedar en blanco los campos",
+                "Fallo concatenación: autómatas ingresados no coinciden o están duplicados",
             });
             this.crearAlerta(
               true,
               3,
-              "No deben quedar en blanco los campos de concatenacion"
+              "Los autómatas ingresados no coinciden con [1,2] o ingresó el mismo autómata dos veces"
             );
           }
         } else {
           this.$store.commit("writeLog", {
             level: "info",
             message:
-              "Fallo concatenación: autómatas no comparten concordancia en sus alfabetos",
+              "Fallo concatenación: no deben quedar en blanco los campos",
           });
           this.crearAlerta(
             true,
             3,
-            "No comparten concordancias en sus alfabetos"
+            "No deben quedar en blanco los campos de concatenacion"
           );
         }
+      
       } else {
         this.$store.commit("writeLog", {
           level: "info",
