@@ -4,15 +4,27 @@
       <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
     <div v-if="alerta.estado">
-      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
-        alerta.mensaje
-      }}</v-alert>
-      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
-        alerta.mensaje
-      }}</v-alert>
-      <v-alert class="multi-line" text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
-        alerta.mensaje
-      }}</v-alert>
+      <v-alert
+        class="multi-line"
+        text
+        v-if="alerta.estado && alerta.tipo == 1"
+        type="success"
+        >{{ alerta.mensaje }}</v-alert
+      >
+      <v-alert
+        class="multi-line"
+        text
+        v-if="alerta.estado && alerta.tipo == 2"
+        type="info"
+        >{{ alerta.mensaje }}</v-alert
+      >
+      <v-alert
+        class="multi-line"
+        text
+        v-if="alerta.estado && alerta.tipo == 3"
+        type="warning"
+        >{{ alerta.mensaje }}</v-alert
+      >
     </div>
     <h1 class="title">Datos autómatas</h1>
     <v-container fluid>
@@ -997,8 +1009,14 @@ export default {
             level: "info",
             message:
               "Unión: " +
-              this.strestados(this.ConjuntoCombi) +
-              this.strgama(this.GamaCombi),
+              /* this.strestados(this.ConjuntoCombi) +
+              this.strgama(this.GamaCombi) */
+              this.alertasAP(
+                this.E_inicialCombi,
+                this.E_FinalesCombi,
+                this.ConjuntoCombi,
+                this.GamaCombi
+              ),
           });
           this.crearAlerta(
             true,
@@ -1648,7 +1666,7 @@ export default {
       return true;
     },
     strgama(gama) {
-      var str = "Transicion(es): \n";
+      var str = "Transición(es): \n";
       for (let i = 0; i < gama.length; i++)
         str =
           str +
