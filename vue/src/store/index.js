@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import axios from 'axios';
 import moment from 'moment';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
@@ -17,7 +17,7 @@ export default new Vuex.Store({
                 method: "post",
                 url: window.location.origin + window.location.pathname + "/api.php",
                 data: { newlog: newlog },
-            });
+            }).catch(err => console.log(err));
             state.log = state.log + newlog + "\n";
         },
     },

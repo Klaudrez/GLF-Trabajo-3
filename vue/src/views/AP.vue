@@ -1,86 +1,18 @@
 <template>
   <div>
-    <v-checkbox v-model="mostrar" label="Mostrar instrucciones"></v-checkbox>
-    <div v-if="mostrar" style="background-color: #d9ad26">
-      <h4>Instrucciones:</h4>
-      <table class="table">
-        <caption></caption>
-        <thead>
-          <tr>
-            <th scope="col">Para:</th>
-            <th scope="col">Como hacerlo:</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Ingresar los estados de los autómatas.</th>
-            <td>
-              En el recuadro se han de ingresar valores alfanuméricos, letras o
-              números separados por una ",".
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Ingresar el alfabeto de los autómatas.</th>
-            <td>
-              En el recuadro se han de ingresar valores alfanuméricos, letras o
-              números separados por una ",".
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Ingresar el estado inicial del autómata.</th>
-            <td>
-              En el recuadro se ha de ingresar un solo valor el cual corresponde
-              al estado inicial, este debe pertenecer al conjunto de estados
-              ingresado anteriormente.
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Ingresar las Funciones de transición.</th>
-            <td>
-              Será de la forma estado del autómata, alfabeto, estado del
-              autómata, para agregar más de una transición se han de separar por
-              ";", los valores ingresador han de extistir en los estados y en el
-              alfabeto (Para ingresar una conexión vacía tipear un "@" en el
-              apartado del alfabeto "estado,@,estado").
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Ingresar los Estados Finales de los autómatas.</th>
-            <td>
-              Se han de ingresan los estados finales sepadaros mediante una ","
-              y siempre y cuando estos pertenezcan al conjunto de estados.
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Concatenación de los autómatas.</th>
-            <td>
-              Una vez ingresados los autómatas, estos se referenciaran como un
-              "1" para el autómata 1 y 2 respectivamente.
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Ejemplo de la clase.</th>
-            <td>
-              Conjunto de estados: q1,q2,q3,q4,q5 , Alfabeto: a,b, Estado
-              Inicial: q5, Función de transición:
-              q5,a,q4;q5,b,q3;q4,a,q4;q4,b,q2;q3,a,q4;q3,b,q1;q2,a,q4;q2,b,q1;q1,a,q1;q1,b,q1,
-              Estado(s) final(es): q2,q3,q4,q5.
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Detalles del algoritmo</th>
-            <td>
-              Para ver los resultados en detalle (conjunto de estados, alfabeto,
-              estado inicial, transiciones, estados finales) puede verlos desde
-              la consola haciendo click derecho/inspeccionar elemento en la
-              pestaña console
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
     <div v-if="grafo.nodos.length > 0">
       <Grafo :key="recargarGrafo" :grafo="grafo" />
+    </div>
+    <div v-if="alerta.estado">
+      <v-alert text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
+        alerta.mensaje
+      }}</v-alert>
+      <v-alert text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
+        alerta.mensaje
+      }}</v-alert>
+      <v-alert text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
+        alerta.mensaje
+      }}</v-alert>
     </div>
     <h1 class="title">Datos autómatas</h1>
     <v-container fluid>
@@ -188,8 +120,8 @@
             no-data-text="Debe ingresar alfabeto de la pila"
             outlined
             dense
-            placeholder="Salida pila"
-            v-model="transicion.salidaPila"
+            placeholder="Entrada pila"
+            v-model="transicion.entradaPila"
           ></v-select>
         </v-col>
         <v-col cols="2">
@@ -219,8 +151,8 @@
             no-data-text="Debe ingresar alfabeto de la pila"
             outlined
             dense
-            placeholder="Entrada pila"
-            v-model="transicion.entradaPila"
+            placeholder="Salida pila"
+            v-model="transicion.salidaPila"
           ></v-select>
           <v-btn
             color="primary"
@@ -361,6 +293,11 @@ export default {
   components: { Grafo },
   data() {
     return {
+      alerta: {
+        estado: false,
+        tipo: null,
+        mensaje: null,
+      },
       grafo: {
         nodos: [],
         alfabeto: [],
@@ -419,7 +356,12 @@ export default {
       network: null,
     };
   },
-  mounted() {},
+  mounted() {
+    this.$store.commit("writeLog", {
+      level: "info",
+      message: "Se accede a " + window.location.pathname + window.location.hash,
+    });
+  },
   watch: {
     arregloGama: function () {
       this.GamaF = this.arregloGama.join(";");
@@ -441,6 +383,13 @@ export default {
     eliminarGama(item) {
       this.arregloGama.splice(this.arregloGama.indexOf(item), 1);
     },
+    crearAlerta(estado, tipo, mensaje) {
+      this.alerta = {
+        estado: estado,
+        tipo: tipo,
+        mensaje: mensaje,
+      };
+    },
     agregarTransicion() {
       if (this.transicion.origen != null && this.transicion.destino != null) {
         var nueva =
@@ -448,9 +397,9 @@ export default {
           "," +
           (this.transicion.alfabeto ? this.transicion.alfabeto : "@") +
           "/" +
-          (this.transicion.entradaPila ? this.transicion.entradaPila : "@") +
-          "/" +
           (this.transicion.salidaPila ? this.transicion.salidaPila : "@") +
+          "/" +
+          (this.transicion.entradaPila ? this.transicion.entradaPila : "@") +
           "," +
           this.transicion.destino;
         if (this.arregloGama.indexOf(nueva) == -1) {
@@ -466,20 +415,35 @@ export default {
       }
     },
     parsearGrafo(funcion) {
-      if (this.ConjuntoPizarra && this.GamaPizarra != null) {
+      if (
+        (this.ConjuntoPizarra && this.Finales && this.GamaPizarra != null) ||
+        funcion
+      ) {
         var aristas = [];
         var nodosF = funcion ? this.E_FinalesCombi : this.Finales.split(",");
         if (this.grafo.finales.length > 0 && !funcion) {
           nodosF = nodosF.concat(this.grafo.finales);
         }
-        for (var i = 0; i < this.GamaPizarra.length; i++) {
-          var arista = this.GamaPizarra[i];
-          aristas.push({
-            origen: arista[0],
-            destino: arista[4],
-            alfabeto: arista[1] + "/" + arista[2] + "/" + arista[3],
-          });
+        if (funcion) {
+          for (var i = 0; i < this.GamaCombi.length; i++) {
+            var aristaC = this.GamaCombi[i];
+            aristas.push({
+              origen: aristaC[0],
+              destino: aristaC[4],
+              alfabeto: aristaC[1] + "/" + aristaC[2] + "/" + aristaC[3],
+            });
+          }
+        } else {
+          for (var j = 0; j < this.GamaPizarra.length; j++) {
+            var arista = this.GamaPizarra[j];
+            aristas.push({
+              origen: arista[0],
+              destino: arista[4],
+              alfabeto: arista[1] + "/" + arista[2] + "/" + arista[3],
+            });
+          }
         }
+
         var inicial = this.grafo.inicial;
         if (inicial.indexOf(this.Inicial) == -1) {
           inicial.push(this.Inicial);
@@ -492,11 +456,12 @@ export default {
           this.ConjuntoPizarra.push(inicial);
         }
         this.grafo = {
-          nodos: this.ConjuntoPizarra,
+          nodos: funcion ? this.ConjuntoCombi : this.ConjuntoPizarra,
           inicial: inicial,
           aristas: aristas,
           finales: nodosF,
         };
+        console.log("grafo", this.grafo);
         this.recargarGrafo = !this.recargarGrafo;
       }
     },
@@ -535,10 +500,10 @@ export default {
         F == null
       ) {
         this.$store.commit("writeLog", {
-          level: "error",
+          level: "info",
           message: "Autómata 1: Hay uno o más campos sin definir",
         });
-        alert("Hay campos en blanco");
+        this.crearAlerta(true, 3, "Hay campos en blanco");
       } else {
         if (
           valQ.test(Q) &&
@@ -602,16 +567,32 @@ export default {
                 this.E_Finales1,
                 "A1"
               );
-
+              this.$store.commit("writeLog", {
+                level: "info",
+                message: "Se ha ingresado el autómata 1 con éxito",
+              });
+              this.crearAlerta(
+                true,
+                1,
+                "Se ha ingresado el autómata 1 con éxito. " +
+                  this.strestados(this.ConjuntoQ1) +
+                  this.strgama(this.Gama1)
+              );
+              this.limpiarFormulario();
+              // alert(
+              //   this.strestados(this.ConjuntoQ1) + this.strgama(this.Gama1)
+              // );
               this.parsearGrafo(false);
             } else {
               this.$store.commit("writeLog", {
-                level: "error",
+                level: "info",
                 message:
                   "Autómata 1: La función de transición contiene estados o alfabetos no declarados",
               });
-              alert(
-                "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
+              this.crearAlerta(
+                true,
+                3,
+                "Datos no válidos. Deben estar contenidos en el alfabeto o en los estados."
               );
               this.E_inicial1 = this.ResetearAutomata(
                 this.ConjuntoQ1,
@@ -624,12 +605,14 @@ export default {
             }
           } else {
             this.$store.commit("writeLog", {
-              level: "error",
+              level: "info",
               message:
                 "Autómata 1: El estado inicial no se encuentra en el conjunto de estados",
             });
-            alert(
-              "Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados"
+            this.crearAlerta(
+              true,
+              3,
+              "Datos no válidos. El estado inicial debe ser parte del conjunto de estados"
             );
             this.E_inicial1 = this.ResetearAutomata(
               this.ConjuntoQ1,
@@ -641,7 +624,11 @@ export default {
             );
           }
         } else {
-          alert("Formato ingresado no valido");
+          this.$store.commit("writeLog", {
+            level: "info",
+            message: "Autómata 1: formato ingresado no válido",
+          });
+          this.crearAlerta(true, 3, "Formato ingresado no válido");
         }
       }
     },
@@ -695,10 +682,10 @@ export default {
         F == null
       ) {
         this.$store.commit("writeLog", {
-          level: "error",
+          level: "info",
           message: "Autómata 2: Hay uno o más campos sin definir",
         });
-        alert("Hay campos en blanco");
+        this.crearAlerta(true, 3, "Hay campos en blanco");
       } else {
         if (
           valQ.test(Q) &&
@@ -754,7 +741,6 @@ export default {
                 this.ConjuntoQ2
               );
               this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
-
               this.mostrardatos(
                 this.ConjuntoQ2,
                 this.Alfabeto2,
@@ -764,16 +750,32 @@ export default {
                 this.E_Finales2,
                 "A2"
               );
-
+              this.$store.commit("writeLog", {
+                level: "info",
+                message: "Se ha ingresado el autómata 2 con éxito",
+              });
+              this.crearAlerta(
+                true,
+                1,
+                "Se ha ingresado el autómata 2 con éxito. " +
+                  this.strestados(this.ConjuntoQ2) +
+                  this.strgama(this.Gama2)
+              );
+              this.limpiarFormulario();
+              // alert(
+              //   this.strestados(this.ConjuntoQ2) + this.strgama(this.Gama2)
+              // );
               this.parsearGrafo(false);
             } else {
               this.$store.commit("writeLog", {
-                level: "error",
+                level: "info",
                 message:
                   "Autómata 2: La función de transición contiene estados o alfabetos no declarados",
               });
-              alert(
-                "Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados"
+              this.crearAlerta(
+                true,
+                3,
+                "Datos no válidos. Deben ser parte del alfabeto o del conjunto de estados"
               );
               this.E_inicial2 = this.ResetearAutomata(
                 this.ConjuntoQ2,
@@ -786,12 +788,14 @@ export default {
             }
           } else {
             this.$store.commit("writeLog", {
-              level: "error",
+              level: "info",
               message:
                 "Autómata 2: El estado inicial no se encuentra en el conjunto de estados",
             });
-            alert(
-              "Lo datos ingresados no validos, el estado inicial debe estar contenido en el conjunto de estados"
+            this.crearAlerta(
+              true,
+              3,
+              "Datos no válidos. El estado inicial debe ser parte del conjunto de estados"
             );
             this.E_inicial2 = this.ResetearAutomata(
               this.ConjuntoQ2,
@@ -803,13 +807,37 @@ export default {
             );
           }
         } else {
-          alert("Formato ingresado no valido");
+          this.$store.commit("writeLog", {
+            level: "info",
+            message: "Autómata 2: formato ingresado no válido",
+          });
+          this.crearAlerta(true, 3, "Formato ingresado no válido");
         }
       }
+    },
+    limpiarFormulario() {
+      this.transicion = {
+        origen: null,
+        entradaPila: null,
+        alfabeto: null,
+        salidaPila: null,
+        destino: null,
+      };
+      this.arregloGama = [];
+      this.opcionesNodos = [];
+      this.opcionesAlfabetoPila = [];
+      this.opcionesAlfabeto = [];
+      this.opcionFinales = [];
+      // this.Nodos = null;
+      // this.Alfabeto = null;
+      // this.Inicial = null;
+      // this.GamaF = null;
+      // this.Finales = null;
     },
     reset() {
       this.limpiar();
       console.log("Datos borrados.");
+      this.limpiarFormulario();
       this.E_inicial1 = this.ResetearAutomata(
         this.ConjuntoQ1,
         this.Alfabeto1,
@@ -887,7 +915,7 @@ export default {
       return true;
     },
     limpiar() {
-      console.clear();
+      // console.clear();
     },
     mostrardatos(
       conjunto,
@@ -963,9 +991,40 @@ export default {
             this.E_FinalesCombi,
             "Au"
           );
+          this.$store.commit("writeLog", {
+            level: "info",
+            message:
+              "Unión: " +
+              this.strestados(this.ConjuntoCombi) +
+              this.strgama(this.GamaCombi),
+          });
+          this.crearAlerta(
+            true,
+            1,
+            "Se han unido los automatas. " +
+              this.strestados(this.ConjuntoCombi) +
+              this.strgama(this.GamaCombi)
+          );
           this.parsearGrafo(true);
-        } else alert("Los automatas no tienen coincidencias en sus alfabetos");
-      } else alert("Debe ingresar ambos automatas");
+        } else {
+          this.$store.commit("writeLog", {
+            level: "info",
+            message:
+              "Falló unión: Los autómatas no tienen coincidencias en sus alfabetos",
+          });
+          this.crearAlerta(
+            true,
+            3,
+            "Los autómatas no tienen coincidencias en sus alfabetos"
+          );
+        }
+      } else {
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Fallo unión: debe ingresar ambos autómatas",
+        });
+        this.crearAlerta(true, 3, "Debe ingresar ambos autómatas");
+      }
     },
     epsilon(transiciones) {
       for (let i = 0; i < transiciones.length; i++) {
@@ -1067,6 +1126,20 @@ export default {
                   this.E_FinalesCombi,
                   "Ac"
                 );
+                this.$store.commit("writeLog", {
+                  level: "info",
+                  message:
+                    "Concatenación: " +
+                    this.strestados(this.ConjuntoCombi) +
+                    this.strgama(this.GamaCombi),
+                });
+                this.crearAlerta(
+                  true,
+                  1,
+                  "Se han concatenado los autómatas. " +
+                    this.strestados(this.ConjuntoCombi) +
+                    this.strgama(this.GamaCombi)
+                );
                 this.parsearGrafo(true);
               } else {
                 this.mostrardatos(
@@ -1146,14 +1219,64 @@ export default {
                   "Ac"
                 );
                 this.parsearGrafo(true);
+                this.$store.commit("writeLog", {
+                  level: "info",
+                  message:
+                    "Concatenación: " +
+                    this.strestados(this.ConjuntoCombi) +
+                    this.strgama(this.GamaCombi),
+                });
+                this.crearAlerta(
+                  true,
+                  1,
+                  "Se han concatenado los autómatas. " +
+                    this.strestados(this.ConjuntoCombi) +
+                    this.strgama(this.GamaCombi)
+                );
               }
-            } else
-              alert(
-                "Los automatas ingresados no coinciden con [1,2] o ingreso el mismo automata dos veces"
+            } else {
+              this.$store.commit("writeLog", {
+                level: "info",
+                message:
+                  "Fallo concatenación: autómatas ingresados no coinciden o están duplicados",
+              });
+              this.crearAlerta(
+                true,
+                3,
+                "Los autómatas ingresados no coinciden con [1,2] o ingresó el mismo autómata dos veces"
               );
-          } else alert("No deben quedar en blanco los campos de concatenacion");
-        } else alert("No comparten concordancias en sus alfabetos");
-      } else alert("Debe ingresar ambos automatas");
+            }
+          } else {
+            this.$store.commit("writeLog", {
+              level: "info",
+              message:
+                "Fallo concatenación: no deben quedar en blanco los campos",
+            });
+            this.crearAlerta(
+              true,
+              3,
+              "No deben quedar en blanco los campos de concatenacion"
+            );
+          }
+        } else {
+          this.$store.commit("writeLog", {
+            level: "info",
+            message:
+              "Fallo concatenación: autómatas no comparten concordancia en sus alfabetos",
+          });
+          this.crearAlerta(
+            true,
+            3,
+            "No comparten concordancias en sus alfabetos"
+          );
+        }
+      } else {
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Fallo concatenación: debe ingresar ambos autómatas",
+        });
+        this.crearAlerta(true, 3, "Debe ingresar ambos automatas");
+      }
     },
     estados3deE(estado, gama) {
       var resultado = [];
@@ -1291,11 +1414,12 @@ export default {
                   String.fromCharCode(aux[0].charCodeAt() - 74)
                 );
               }
-            } else
+            } else {
               aux = aux.replace(
                 aux[0],
                 String.fromCharCode(aux[0].charCodeAt() + 1)
               );
+            }
           }
           estados2[indice] = aux;
         }
@@ -1392,11 +1516,12 @@ export default {
                   String.fromCharCode(palabra2[0].charCodeAt() - 74)
                 );
               }
-            } else
+            } else {
               palabra2 = palabra2.replace(
                 palabra2[0],
                 String.fromCharCode(palabra2[0].charCodeAt() + 1)
               );
+            }
           }
           return palabra2;
         }
@@ -1507,6 +1632,32 @@ export default {
       for (let i = 0; i < strr.length; i++)
         if (!arreglo.includes(strr[i])) return false;
       return true;
+    },
+    strgama(gama) {
+      var str = "y las transiciones son: \n";
+      for (let i = 0; i < gama.length; i++)
+        str =
+          str +
+          gama[i][0] +
+          " - " +
+          gama[i][1] +
+          "/" +
+          gama[i][2] +
+          "/" +
+          gama[i][3] +
+          " - " +
+          gama[i][4] +
+          "\n";
+      return str;
+    },
+    strestados(estados) {
+      var str = "Los estados son: \n";
+      for (let i = 0; i < estados.length; i++) {
+        if (i != estados.length - 1) {
+          str = str + estados[i] + " - ";
+        } else str = str + estados[i] + " \n";
+      }
+      return str;
     },
   },
 };

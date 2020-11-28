@@ -12,7 +12,6 @@
     "axios": "^0.21.0",
     "buefy": "^0.9.4",
     "core-js": "^3.6.5",
-    "cytoscape-cola": "^2.4.0",
     "moment": "^2.29.1",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",

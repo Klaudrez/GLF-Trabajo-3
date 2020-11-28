@@ -3,6 +3,17 @@
     <div v-if="grafo.nodos">
       <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
+    <div v-if="alerta.estado">
+      <v-alert text v-if="alerta.estado && alerta.tipo == 1" type="success">{{
+        alerta.mensaje
+      }}</v-alert>
+      <v-alert text v-if="alerta.estado && alerta.tipo == 2" type="info">{{
+        alerta.mensaje
+      }}</v-alert>
+      <v-alert text v-if="alerta.estado && alerta.tipo == 3" type="warning">{{
+        alerta.mensaje
+      }}</v-alert>
+    </div>
     <h1 class="title">Datos autómata</h1>
     <v-container fluid>
       <v-row>
@@ -22,7 +33,7 @@
           ></v-combobox>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: estado1,estado2,estado3,</v-subheader>
+          <v-subheader>Ingrese cada estado y pulse 'enter'</v-subheader>
         </v-col>
       </v-row>
 
@@ -43,7 +54,7 @@
           ></v-combobox>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: letra/num,</v-subheader>
+          <v-subheader>Ingrese cada valor presionando 'enter'</v-subheader>
         </v-col>
       </v-row>
 
@@ -64,7 +75,7 @@
           ></v-select>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: estado,</v-subheader>
+          <v-subheader>Seleccione un estado</v-subheader>
         </v-col>
       </v-row>
 
@@ -125,6 +136,7 @@
             v-model="arregloGama"
             :items="arregloGama"
             chips
+            no-data-text="Debe agregar transiciones"
             multiple
             outlined
             @change="changed()"
@@ -138,7 +150,8 @@
         </v-col>
         <v-col cols="4">
           <v-subheader
-            >Formato: estadoentrada,alfabeto,estadosalida;</v-subheader
+            >Transiciones en formato:
+            estadoentrada,alfabeto,estadosalida;</v-subheader
           >
         </v-col>
       </v-row>
@@ -161,7 +174,7 @@
           ></v-select>
         </v-col>
         <v-col cols="4">
-          <v-subheader>Formato: estado,estado</v-subheader>
+          <v-subheader>Seleccione uno o más estados</v-subheader>
         </v-col>
       </v-row>
 
@@ -196,15 +209,18 @@ export default {
   components: { Grafo },
   data() {
     return {
+      alerta: {
+        estado: false,
+        tipo: null,
+        mensaje: null,
+      },
       opcionesNodos: [],
       opcionesAlfabeto: [],
       opcionFinales: [],
       grafo: {},
       transicion: {
         origen: null,
-        entradaPila: null,
         alfabeto: null,
-        salidaPila: null,
         destino: null,
       },
       arregloGama: [],
@@ -233,8 +249,10 @@ export default {
     };
   },
   mounted() {
-    // ejemplo de log
-    // this.$store.commit('writeLog', {level: "info", message: "aaa"});
+    this.$store.commit("writeLog", {
+      level: "info",
+      message: "Se accede a " + window.location.pathname + window.location.hash,
+    })
   },
   watch: {
     arregloGama: function () {
@@ -273,7 +291,12 @@ export default {
       }
     },
     parsearGrafo() {
-      if (this.ConjuntoP && this.GamaP != null) {
+      if (
+        this.ConjuntoP &&
+        this.Alfabeto &&
+        this.Finales &&
+        this.GamaP != null
+      ) {
         var aristas = [];
         var letras = this.Alfabeto.split(",");
         var nodosF = this.Finales.split(",");
@@ -327,9 +350,9 @@ export default {
         G == null ||
         this.E_inicial1 == null ||
         F == null
-      )
-        alert("Hay campos en blanco");
-      else {
+      ) {
+        this.crearAlerta(true, 3, "Hay campos en blanco");
+      } else {
         if (
           valQ.test(Q) &&
           valA.test(A) &&
@@ -365,11 +388,27 @@ export default {
             this.ConjuntoP = this.Pizarra(this.ConjuntoQ1);
             this.GamaP = this.Pizarra(this.Gama1);
             this.E_FinalesP = this.Pizarra(this.E_Finales1);
+            this.$store.commit("writeLog", {
+              level: "info",
+              message: "Se ha ingresado el autómata con éxito",
+            });
+            this.crearAlerta(true, 1, "Se ha ingresado el autómata con éxito");
             this.parsearGrafo();
           } else {
-            alert("Datos no validos");
+            this.$store.commit("writeLog", {
+              level: "info",
+              message:
+                "Los estados finales/inicial no coinciden con el conjunto de estados",
+            });
+            this.crearAlerta(true, 3, "Datos no válidos");
           }
-        } else alert("Formato ingresado no valido");
+        } else {
+          this.$store.commit("writeLog", {
+            level: "info",
+            message: "El formato de datos ingresados no es válido",
+          });
+          this.crearAlerta(true, 3, "Formato ingresado no válido");
+        }
       }
     },
     AFD_ER() {
@@ -382,8 +421,23 @@ export default {
       );
     },
     reset() {
+      this.crearAlerta(false, null, null);
       this.limpiar();
       console.log("Datos borrados.");
+      this.transicion = {
+        origen: null,
+        alfabeto: null,
+        destino: null,
+      };
+      this.arregloGama = [];
+      this.Nodos = null;
+      this.Alfabeto = null;
+      this.Inicial = null;
+      this.GamaF = null;
+      this.Finales = null;
+      this.opcionesNodos = [];
+      this.opcionesAlfabeto = [];
+      this.opcionFinales = [];
       this.E_inicial1 = this.ResetearAutomata(
         this.ConjuntoQ1,
         this.Alfabeto1,
@@ -641,7 +695,17 @@ export default {
           this.Gama3 = this.copiararray(gama1, gama2);
         }
         this.parsearGrafo();
-      } else alert("El automata ya se encuentra en su estado minimo");
+      } else {
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "El autómata ya está en su estado mínimo",
+        });
+        this.crearAlerta(
+          true,
+          2,
+          "El autómata ya se encuentra en su estado mínimo"
+        );
+      }
     },
 
     //Funciones de creacion y visualizacion de automatas
@@ -851,10 +915,11 @@ export default {
               );
               if (this.noexiste(estadoU, nuevoQ)) nuevoQ.push(estadoU);
             }
-          } else
+          } else {
             nuevoG.push(
               this.añadirtransicion(nuevoQ[i], alfabeto[j], nuevoQ[i])
             );
+          }
         }
       }
       if (this.existefinal(nuevoQ[0], estado_f)) nuevoF.push(nuevoQ[0]);
@@ -987,7 +1052,10 @@ export default {
       if (this.TieneSalidas(e_finales, gama))
         e_finales = this.NuevoFinal(estados, gama, e_finales);
 
-      while (this.TieneSalidas(e_inicial, gama) && estados.length > 2) {
+      while (
+        this.TieneSalidas(e_inicial, gama) &&
+        this.existeintermedio(estados, gama)
+      ) {
         var eliminar = this.Terna_estados(e_inicial, gama);
         var estados_s = this.Salidas_de_x(eliminar[1], gama);
         var estados_e = this.Entradas_de_x(eliminar[1], gama);
@@ -1021,17 +1089,47 @@ export default {
         gama.push(this.añadirtransicion(eliminar[0], er, eliminar[2]));
 
         gama = this.EliminarTransiciones_de_x(eliminar[1], gama);
-        //gama=EliminarT_de_x_y(eliminar[0],eliminar[1],gama)
-        //gama=EliminarTransicionEspecifica(eliminar[0],ObtenerAlfa(eliminar[0],gama,eliminar[1]),eliminar[1],gama)
         console.log(gama);
         estados = this.EliminarEstado_x(eliminar[1], estados);
         console.log(estados);
       }
-
       this.mostrardatos(estados, alfabeto, gama, e_inicial, e_finales, "ER");
       this.ConjuntoP = this.Pizarra(estados);
       this.GamaP = this.Pizarra(gama);
       this.parsearGrafo();
+      if (this.MostrarER(e_inicial, gama, e_finales) != undefined) {
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Se ha obtenido la expresión regular del autómata",
+        });
+        this.crearAlerta(
+          true,
+          1,
+          "La expresión regular es: " +
+            this.MostrarER(e_inicial, gama, e_finales)
+        );
+      } else {
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "No se ha ingresado un autómata",
+        });
+        this.crearAlerta(
+          true,
+          3,
+          "Ingrese un autómata para obtener su expresión regular"
+        );
+      }
+    },
+    crearAlerta(estado, tipo, mensaje) {
+      this.alerta = {
+        estado: estado,
+        tipo: tipo,
+        mensaje: mensaje,
+      };
+    },
+    MostrarER(estado1, gama, estado2) {
+      for (let i = 0; i < gama.length; i++)
+        if (gama[i][0] == estado1 && gama[i][2] == estado2) return gama[i][1];
     },
     mostrargama(gama) {
       for (let i = 0; i < gama.length; i++) console.log(gama[i]);
@@ -1198,6 +1296,18 @@ export default {
           }
         }
       }
+    },
+    existeintermedio(estados, gama) {
+      for (let i = 0; i < estados.length; i++) {
+        if (this.Salidas_de_x(estados[i], gama).length > 0) {
+          var salidas = this.Salidas_de_x(estados[i], gama);
+
+          for (let j = 0; j < salidas.length; j++) {
+            if (this.Salidas_de_x(salidas[j], gama).length > 0) return true;
+          }
+        }
+      }
+      return false;
     },
   },
 };

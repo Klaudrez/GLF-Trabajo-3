@@ -2,7 +2,6 @@
   <cytoscape
     ref="cy"
     :config="config"
-    :preConfig="preConfig"
     :afterCreated="afterCreated"
     style="height: 100%"
   >
@@ -20,7 +19,6 @@ import nodoFinal from "../assets/nodo-final.png";
 import nodoInicialFinal from "../assets/nodo-inicial-final.png";
 import nodoInicial from "../assets/nodo-inicial.png";
 import nodoNormal from "../assets/nodo.png";
-import cola from "cytoscape-cola";
 
 export default {
   name: "Grafo",
@@ -70,6 +68,7 @@ export default {
         {
           selector: "edge",
           style: {
+            "curve-style": "bezier",
             "line-color": "#CCCCCC",
             "target-arrow-color": "#CCCCCC",
             "target-arrow-shape": "triangle",
@@ -137,9 +136,6 @@ export default {
       await cy;
       cy.layout(this.config.layout).run();
     },
-    preConfig(cytoscape) {
-      cytoscape.use(cola);
-    },
   },
 };
 </script>
@@ -153,7 +149,7 @@ export default {
 #cytoscape-div > div,
 #cytoscape-div > div > canvas {
   min-height: 300px !important;
-  max-width: 700px !important;
+  max-width: 100% !important;
   height: 100% !important;
 }
 </style>
