@@ -452,6 +452,11 @@ export default {
         this.E_inicial1,
         this.E_Finales1
       );
+      this.$store.commit("writeLog", {
+        level: "info",
+        message: "Se han borrado los datos del autómata",
+      });
+      this.crearAlerta(false, null, null);
       this.parsearGrafo();
     },
 

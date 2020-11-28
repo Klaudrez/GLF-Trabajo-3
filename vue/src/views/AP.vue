@@ -878,10 +878,28 @@ export default {
         this.E_inicialCombi,
         this.E_FinalesCombi
       );
-
       this.ConjuntoPizarra = this.copiararray(this.ConjuntoQ1, this.ConjuntoQ2);
       this.GamaPizarra = this.copiararray(this.Gama1, this.Gama2);
+      this.limpiarResultado();
+      this.parsearGrafo(true);
       this.parsearGrafo(false);
+      this.$store.commit("writeLog", {
+        level: "info",
+        message: "Se han borrado los datos de ambos autómatas",
+      });
+      this.crearAlerta(false, null, null);
+    },
+    limpiarResultado() {
+      this.ConjuntoCombi = [];
+      this.AlfabetoCombi = [];
+      this.AlfabetoPCombi = [];
+      this.GamaCombi = [];
+      this.E_inicialCombi = null;
+      this.E_FinalesCombi = [];
+      this.$store.commit("writeLog", {
+        level: "info",
+        message: "Se han limpiado los resultados",
+      });
     },
     ResetearAutomata(
       estados,
@@ -949,6 +967,7 @@ export default {
     },
     Union() {
       this.limpiar();
+      this.limpiarResultado();
       if (this.ConjuntoQ1.length > 0 && this.ConjuntoQ2.length > 0) {
         if (this.compararalfabeto(this.Alfabeto1, this.Alfabeto2)) {
           this.mostrardatos(
@@ -1009,8 +1028,6 @@ export default {
             level: "info",
             message:
               "Unión: " +
-              /* this.strestados(this.ConjuntoCombi) +
-              this.strgama(this.GamaCombi) */
               this.alertasAP(
                 this.E_inicialCombi,
                 this.E_FinalesCombi,
@@ -1063,6 +1080,7 @@ export default {
     },
     Concatenar() {
       this.limpiar();
+      this.limpiarResultado();
       if (this.ConjuntoQ1.length > 0 && this.ConjuntoQ2.length > 0) {
         if (this.compararalfabeto(this.Alfabeto1, this.Alfabeto2)) {
           var a1 = this.Conca1;
@@ -1093,11 +1111,13 @@ export default {
                   "A2"
                 );
 
-                this.ConjuntoQ1.splice(0, 0, "Ni");
-                this.ConjuntoQ1.push("Nf");
+                var conjuntoAux = JSON.parse(JSON.stringify(this.ConjuntoQ1));
+
+                conjuntoAux.splice(0, 0, "Ni");
+                conjuntoAux.push("Nf");
 
                 this.ConjuntoCombi = this.Datos_dupli(
-                  this.copiararray(this.ConjuntoQ1, this.ConjuntoQ2)
+                  this.copiararray(conjuntoAux, this.ConjuntoQ2)
                 );
                 this.GamaCombi = this.copiararray(this.Gama1, this.Gama2);
                 this.AlfabetoCombi = this.Datos_dupli(
