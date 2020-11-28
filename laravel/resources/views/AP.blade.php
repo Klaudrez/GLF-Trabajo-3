@@ -208,6 +208,8 @@ function ValidarEntrada1()
               mostrardatos(ConjuntoQ1,Alfabeto1,AlfabetoP1,Gama1,E_inicial1,E_Finales1,"A1")
 
               graph()
+
+              alert(alertasAP(E_inicial1,E_Finales1,ConjuntoQ1,Gama1))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -302,6 +304,7 @@ function ValidarEntrada2()
               mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
 
               graph()
+              alert(alertasAP(E_inicial2,E_Finales2,ConjuntoQ2,Gama2))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -426,6 +429,7 @@ function Union()
 
       mostrardatos(ConjuntoCombi,Alfabeto1,AlfabetoP1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Au")
       graph()
+      alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
     }
     else
       alert("Los automatas no tienen coincidencias en sus alfabetos")
@@ -502,6 +506,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
+            alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
           }
           else
           {
@@ -541,6 +546,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
+            alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
           }
         }
         else
@@ -944,6 +950,51 @@ function existealfa(string,arreglo)
     if(!arreglo.includes(strr[i]))
       return false
   return true
+}
+
+function strgama(gama)
+{
+    var str="Transicion(es) : \n"
+  for(let i=0;i<gama.length;i++)
+      str=str+gama[i][0]+" - "+gama[i][1]+"/"+gama[i][2]+"/"+gama[i][3]+" - "+gama[i][4]+"\n"
+     return str
+}
+
+function strfinales(gama)
+{
+    var str="Estado(s) final(es) : \n"
+  for(let i=0;i<gama.length;i++){
+    if(i!=gama.length-1){
+
+      str=str+gama[i]+" - "
+    }
+    else{
+      str=str+gama[i]+"\n"
+    }
+  }
+      
+     return str
+}
+
+function strestados(estados)
+{
+  var str="Estado(s) : \n"
+  for(let i=0;i<estados.length;i++){
+    if(i!=estados.length - 1){
+       str=str+estados[i]+" - "
+    }
+    else
+      str=str+estados[i]+" \n"
+  }
+
+  return str
+}
+function alertasAP (E_inicial,E_Finales,Conjunto,Gama){
+  return "Estado inicial : \n" +
+  E_inicial + "\n" + 
+  strfinales(E_Finales) + 
+  strestados(Conjunto) + 
+  strgama(Gama)
 }
 
 </script>
