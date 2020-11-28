@@ -209,7 +209,7 @@ function ValidarEntrada1()
 
               graph()
 
-              alert("Estado inicial : \n"+E_inicial1 + "\n" + strfinales(E_Finales1) + strestados(ConjuntoQ1) +strgama(Gama1))
+              alert(alertasAP(E_inicial1,E_Finales1,ConjuntoQ1,Gama1))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -304,7 +304,7 @@ function ValidarEntrada2()
               mostrardatos(ConjuntoQ2,Alfabeto2,AlfabetoP2,Gama2,E_inicial2,E_Finales2,"A2")
 
               graph()
-              alert("Estado inicial : \n"+E_inicial2 + "\n" + strfinales(E_Finales2) + strestados(ConjuntoQ2) +strgama(Gama2))
+              alert(alertasAP(E_inicial2,E_Finales2,ConjuntoQ2,Gama2))
             }
             else{
               alert("Lo datos ingresados no validos, deben estar contenidos en el alfabeto o en los estados")
@@ -429,7 +429,7 @@ function Union()
 
       mostrardatos(ConjuntoCombi,Alfabeto1,AlfabetoP1,GamaCombi,E_inicialCombi,E_FinalesCombi,"Au")
       graph()
-      alert("Estado inicial : \n"+E_inicialCombi + "\n" + strfinales(E_FinalesCombi) + strestados(ConjuntoCombi) +strgama(GamaCombi))
+      alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
     }
     else
       alert("Los automatas no tienen coincidencias en sus alfabetos")
@@ -506,7 +506,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
-            alert("Estado inicial : \n"+E_inicialCombi + "\n" + strfinales(E_FinalesCombi) + strestados(ConjuntoCombi) +strgama(GamaCombi))
+            alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
           }
           else
           {
@@ -546,7 +546,7 @@ function Concatenar()
             mostrardatos(ConjuntoCombi,AlfabetoCombi,AlfabetoPCombi,GamaCombi,E_inicialCombi,E_FinalesCombi,"Ac")
 
             graph()
-            alert("Estado inicial : \n"+E_inicialCombi + "\n" + strfinales(E_FinalesCombi) + strestados(ConjuntoCombi) +strgama(GamaCombi))
+            alert(alertasAP(E_inicialCombi,E_FinalesCombi,ConjuntoCombi,GamaCombi))
           }
         }
         else
@@ -988,6 +988,13 @@ function strestados(estados)
   }
 
   return str
+}
+function alertasAP (E_inicial,E_Finales,Conjunto,Gama){
+  return "Estado inicial : \n" +
+  E_inicial + "\n" + 
+  strfinales(E_Finales) + 
+  strestados(Conjunto) + 
+  strgama(Gama)
 }
 
 </script>
