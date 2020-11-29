@@ -477,19 +477,19 @@ export default {
     },
 
     ResetearAutomata(estados, alfabeto, gama, e_inicial, e_finales) {
-      estados = estados.splice(0, estados.length);
-      alfabeto = alfabeto.splice(0, alfabeto.length);
-      gama = gama.splice(0, gama.length);
+    
+      estados.splice(0, estados.length);
+      alfabeto.splice(0, alfabeto.length);
+      gama.splice(0, gama.length);
       e_inicial = null;
-      e_finales = e_finales.splice(0, e_finales.length);
-      console.log(e_finales);
+      e_finales.splice(0, e_finales.length);
       return e_inicial;
     },
 
     ContieneEstado(estados, contenedor) {
       if (!Array.isArray(estados)) {
         if (contenedor.includes(estados)) return true;
-        else return false;
+        return false;
       } else {
         for (let i = 0; i < estados.length; i++)
           if (!contenedor.includes(estados[i])) return false;
@@ -959,7 +959,7 @@ export default {
         // true = final
         return true;
       //false = nofinal
-      else return false;
+      return false;
     },
     buscar_disti(matriz) {
       var ids = [];
@@ -1039,7 +1039,7 @@ export default {
       for (let i = 0; i < conjunto.length; i++)
         if (this.soniguales(conjunto[i], estado)) bitc = 1;
       if (bitc == 1) return false;
-      else return true;
+      return true;
     },
     artostr(arreglo) {
       var r = "";
@@ -1052,7 +1052,7 @@ export default {
     compararalfabeto(arr1, arr2) {
       if (this.comparararreglo(arr1, arr2) && this.comparararreglo(arr2, arr1))
         return true;
-      else return false;
+      return false;
     },
     comparararreglo(arr1, arr2) {
       for (let i = 0; i < arr1.length; i++) {

@@ -799,6 +799,7 @@ export default {
                 this.E_inicial2,
                 this.E_Finales2
               );
+              console.log(this.ConjuntoQ2)
             }
           } else {
             this.$store.commit("writeLog", {
@@ -921,13 +922,18 @@ export default {
       e_inicial,
       e_finales
     ) {
-      estados = [];
+      /* estados = [];
       alfabeto = [];
       alfabetopila = [];
       gama = [];
       e_inicial = null;
-      e_finales = [];
-      console.log(e_finales);
+      e_finales = []; */
+      estados.splice(0,estados.length);
+      alfabeto.splice(0,alfabeto.length);
+      alfabetopila.splice(0,alfabetopila.length);
+      gama.splice(0,gama.length)
+      e_inicial = null;
+      e_finales.splice(e_finales.length)
       return e_inicial;
     },
     validar_estadosx(comparador, a_comparar) {
@@ -1643,7 +1649,7 @@ export default {
         // true = final
         return true;
       //false = nofinal
-      else return false;
+      return false;
     },
     CompararArray(arr1, arr2) {
       for (let i = 0; i < arr1.length; i++) {
@@ -1671,7 +1677,7 @@ export default {
     compararalfabeto(arr1, arr2) {
       if (this.comparararreglo(arr1, arr2) && this.comparararreglo(arr2, arr1))
         return true;
-      else return false;
+      return false;
     },
     comparararreglo(arr1, arr2) {
       for (let i = 0; i < arr1.length; i++) {
