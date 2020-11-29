@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="grafo.nodos">
+    <div v-if="grafo.nodos.length > 0">
       <Grafo :key="recargarGrafo" :grafo="grafo" />
     </div>
     <div v-if="alerta.estado">
@@ -319,6 +319,15 @@ export default {
           finales: nodosF,
         };
         this.recargarGrafo = !this.recargarGrafo;
+      } else {
+        this.grafo = {
+          nodos: [],
+          alfabeto: [],
+          inicial: [],
+          aristas: [],
+          finales: [],
+        };
+        this.recargarGrafo = !this.recargarGrafo;
       }
     },
     ValidarEntrada1() {
@@ -457,6 +466,7 @@ export default {
         message: "Se han borrado los datos del autómata",
       });
       this.crearAlerta(false, null, null);
+      this.recargarGrafo = !this.recargarGrafo;
       this.parsearGrafo();
     },
 
