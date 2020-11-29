@@ -176,7 +176,7 @@
           >
         </v-col>
         <v-col cols="4">
-          <v-subheader>Agregar nueva transición</v-subheader>
+          <v-subheader>Agregar nueva transición, dejar en blanco para elemento vacio</v-subheader>
         </v-col>
       </v-row>
 

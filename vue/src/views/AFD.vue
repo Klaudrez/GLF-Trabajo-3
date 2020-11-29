@@ -379,6 +379,7 @@ export default {
           this.ConjuntoQ1 = this.Datos_dupli(Q.split(","));
           this.E_Finales1 = this.Datos_dupli(F.split(","));
           this.Gama1 = this._Gama(this.Datos_dupli(G.split(";")));
+          this.Gama1 = this.epsilon(this.Gama1);
 
           if (
             this.ContieneEstado(this.E_inicial1, this.ConjuntoQ1) &&
@@ -388,7 +389,6 @@ export default {
             this.ConjuntoQ1.splice(0, 0, this.E_inicial1);
             this.ConjuntoQ1 = this.Datos_dupli(this.ConjuntoQ1);
 
-            this.Gama1 = this.epsilon(this.Gama1);
 
             this.mostrardatos(
               this.ConjuntoQ1,
@@ -533,10 +533,10 @@ export default {
       console.log("Estados finales " + Nautomata + ":", e_final);
       console.log("Estado inicial " + Nautomata + ":", e_ini);
 
-      console.log(
+      /* console.log(
         "Tabla de estados " + Nautomata + ":",
         this.añadirconex3(this.tabla_estados(conjunto, alfabeto, gama), gama)
-      );
+      ); */
     },
 
     Pizarra(contenido) {
@@ -604,7 +604,7 @@ export default {
       return respuesta;
     },
 
-    estado3alfasinconsumir(estado, alfa, gama) {
+    /* estado3alfasinconsumir(estado, alfa, gama) {
       var respuesta = "";
       var copiag = this.copia(gama);
       while (this.tiene3(estado, copiag)) {
@@ -627,9 +627,9 @@ export default {
         }
       }
       return respuesta;
-    },
+    }, */
 
-    añadirconex3(matriz, gama) {
+    /* añadirconex3(matriz, gama) {
       for (let i = 1; i < matriz.length; i++) {
         for (let j = 1; j < matriz[0].length; j++) {
           var respuesta = "";
@@ -655,7 +655,7 @@ export default {
         }
       }
       return matriz;
-    },
+    }, */
 
     optimizar(estados1, estados2, alfa, gama1, gama2, estadosf) {
       var matriz_d = this.matriz_distinguible(
