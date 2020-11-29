@@ -217,7 +217,13 @@ export default {
       opcionesNodos: [],
       opcionesAlfabeto: [],
       opcionFinales: [],
-      grafo: {},
+      grafo: {
+        nodos: [],
+        alfabeto: [],
+        inicial: [],
+        aristas: [],
+        finales: [],
+      },
       transicion: {
         origen: null,
         alfabeto: null,
@@ -1062,15 +1068,32 @@ export default {
     },
     //Funciones para obetener ER de un AFD
     Afd_to_Er(estados, alfabeto, gama, e_finales, e_inicial) {
-      if (this.TieneEntradas(e_inicial, gama))
+
+      if (this.TieneEntradas(e_inicial, gama)){
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Se crea un nuevo estado inicial, ["+e_inicial+"] deja de serlo",
+        });
         e_inicial = this.NuevoInicial(estados, gama, e_inicial);
-      if (this.TieneSalidas(e_finales, gama))
+      }
+      if (this.TieneSalidas(e_finales, gama)){
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Se crea un nuevo esta final, ["+e_finales+"] deja de serlo",
+        });
         e_finales = this.NuevoFinal(estados, gama, e_finales);
+      }
 
       while (
         this.TieneSalidas(e_inicial, gama) &&
         this.existeintermedio(estados, gama)
       ) {
+
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Se encuentran estado intermedios",
+        });
+        
         var eliminar = this.Terna_estados(e_inicial, gama);
         var estados_s = this.Salidas_de_x(eliminar[1], gama);
         var estados_e = this.Entradas_de_x(eliminar[1], gama);
@@ -1107,6 +1130,11 @@ export default {
         console.log(gama);
         estados = this.EliminarEstado_x(eliminar[1], estados);
         console.log(estados);
+
+        this.$store.commit("writeLog", {
+          level: "info",
+          message: "Se elimina estado intermedio ["+ eliminar[1] +"]",
+        });
       }
       this.mostrardatos(estados, alfabeto, gama, e_inicial, e_finales, "ER");
       this.ConjuntoP = this.Pizarra(estados);
